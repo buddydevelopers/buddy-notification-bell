@@ -1,0 +1,56 @@
+.bell_notification_container .notifications_lists_container{
+	display: none;
+}
+
+.notification_bell .bnb-pending-notifications{
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+}
+
+.notification_bell .bnb-pending-notifications span{
+	position: absolute;
+	left: 60%;
+	top: 0;
+	color: white;
+	background: #ea0a0a;
+	font-size: 13px;
+	padding: 0 2px;
+}
+
+.notifications_lists_container .notifications_lists{
+	list-style-type: none;
+	position: absolute;
+	margin: 0;
+	padding: 0;	
+	border: 1px solid #ccc;
+	background-color: #fff;
+	border-radius: 3px;
+	overflow: hidden;
+	max-width: 350px;
+	font-size: .85rem;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+	max-height: 200px;
+	overflow-y: scroll;
+}
+
+.notifications_lists_container .notifications_lists li {
+    	padding: .25rem .5rem;
+    	border-bottom: 1px solid #ccc;
+
+}
+
+.notifications_lists_container .notifications_lists li:hover {
+	background-color: #f5f5f5;
+}
+
+.notifications_lists_container  .notifications_lists li:last-child {
+    border-bottom: none;
+}
+
+.notifications_lists_container .notifications_lists li  a{ 
+	color: #1d2129;
+	box-shadow: none;
+	padding: 6px 30px 5px 12px;
+	position: relative;
+}
