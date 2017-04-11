@@ -29,15 +29,17 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_URL' ) ) {
-	define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_URL',  plugin_dir_url( __FILE__ ) );
-}
-
-if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
-	define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH',  plugin_dir_path( __FILE__ ) );
-}
 /* Only load code that needs BuddyPress to run once BP is loaded and initialized. */
 function load_bnb_component_init() {
+
+	if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_URL' ) ) {
+		define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_URL',  plugin_dir_url( __FILE__ ) );
+	}
+
+	if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
+		define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH',  plugin_dir_path( __FILE__ ) );
+	}
+
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-notification-bell-public.php';
 	$instance = Buddy_Notification_Bell_Public::get_instance();
 }
