@@ -182,8 +182,7 @@ class Buddy_Notification_Bell_Public {
 	 * @return type
 	 */
 	function bnb_process_notification_request( $response, $data, $screen_id ) {
-
-		//var_dump( $data );
+        
 		if ( isset( $data['bnb-data'] ) ) {
 
 			$notifications = array();
