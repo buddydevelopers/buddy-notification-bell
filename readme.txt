@@ -1,9 +1,9 @@
 === Buddy Notification Bell ===
-Contributors: 1naveengiri
+Contributors: 1naveengiri, buddydevelopers
 Tags: buddypress,buddypress notifications, live, notifications, notifications bell, bell
-Requires at least: BuddyPress 1.9
+Requires at least: WordPress 4.5
 Tested up to: BuddyPress 2.8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,9 @@ Buddy Notification Bell convert buddypress notification to buddypress Notificati
 
 == Description ==
 
-This plugin provide a shortcode [buddy_notification_bell] to show notification bell.
+This plugin provide a shortcode 
+=== [buddy_notification_bell] === 
+to show notification bell.
 This bell not only show real-time notification but also it will give a notification bell sound alert like we got in facebook and what\'sapp on new notification recive.
 
 == Installation ==
@@ -38,7 +40,16 @@ Right now I don\'t have any for support forum but if you have any query related 
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0=
 1. Complete rewrite for better code and efficiency. 
-1. Uses WordPress heartbeat api instead of long polling via the ajax. 
-1. Allows theme authors to replace the inbuilt notification UI with notification bell . 
+2. Uses WordPress heartbeat api instead of long polling via the ajax. 
+3. Allows theme authors to replace the inbuilt notification UI with notification bell . 
+
+= 1.0.1=
+1. Fix Fatal error when Notification Module is inactive
+2. Code Improvement removed some debugging code.
+3. Add Notice when BuddyPress is inactive
+4. Add Unit Test for the Plug in
+
+ == Upgrade Notice ==
+Buddy Notification Bell 1.0.1, Minor release which fixes Fatal error when Notification Module is inactive
