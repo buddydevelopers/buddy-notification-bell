@@ -15,7 +15,7 @@
  * Plugin Name:     Buddy Notification Bell
  * Plugin URI:        http://buddydevelopers.com
  * Description:       This plugin convert buddypress notification to buddypress Notification bell. It show all notification with bell alert and anywhere you want with just one shortcode.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            buddydevelopers
  * Author URI:        http://buddydevelopers.com
  * License:           GPL-2.0+
