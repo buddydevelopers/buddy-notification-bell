@@ -44,3 +44,15 @@ function load_bnb_component_init() {
 	$instance = Buddy_Notification_Bell_Public::get_instance();
 }
 add_action( 'bp_include', 'load_bnb_component_init' );
+
+/**
+ * Add Admin notification when BuddyPress is inactive.
+ */
+function bnb_admin_notice() {
+	if( ! is_plugin_active('buddypress/bp-loader.php') ){ ?>
+		<div class="notice notice-warning is-dismissible">
+			<p><?php _e( 'Buddy Notification Bell required BuddyPress to be activated', 'buddy-notification-bell' ); ?></p>
+		</div>
+	<?php }
+}
+add_action( 'admin_notices', 'bnb_admin_notice' );
