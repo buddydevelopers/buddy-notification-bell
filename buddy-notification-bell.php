@@ -40,8 +40,12 @@ function load_bnb_component_init() {
 		define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH',  plugin_dir_path( __FILE__ ) );
 	}
 
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-notification-bell-public.php';
-	$instance = Buddy_Notification_Bell_Public::get_instance();
+	$bp = buddypress();
+	// Allow plugin functionality to work only when Notification module is enabled.
+	if( isset( $bp->notifications ) && !empty( $bp->notifications )){
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-notification-bell-public.php';
+		$instance = Buddy_Notification_Bell_Public::get_instance();
+	}
 }
 add_action( 'bp_include', 'load_bnb_component_init' );
 
