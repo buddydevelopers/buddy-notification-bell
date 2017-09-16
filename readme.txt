@@ -38,7 +38,7 @@ Right now I dont have any for support forum but if you have any query related to
 
 == Demo ==
 
-https://www.youtube.com/watch?v=seMBJZB-vu8&t=4s
+https://www.youtube.com/watch?v=seMBJZB-vu8
 
 == Screenshots ==
 
