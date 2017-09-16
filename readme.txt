@@ -36,6 +36,10 @@ No, It needs you to have BuddyPress installed and activated and the BuddyPress n
 = Where Do I Ask for support? =
 Right now I dont have any for support forum but if you have any query related to plugin you can email 1naveengiri@gmail.com.
 
+== Demo ==
+
+https://www.youtube.com/watch?v=seMBJZB-vu8&t=4s
+
 == Screenshots ==
 
 1. Notification Bell with Notification Drop down by BuddyDeveloper[http://buddydevelopers.com]
