@@ -85,6 +85,7 @@ jQuery(document).ready(function(){
 		
 		elements.each( function() {
 			var element = jq(this);
+			jq(element).show();
 			var current_count = parseInt( element.text() );
 			
 			current_count = current_count + parseInt(count) - 0;

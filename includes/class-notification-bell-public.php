@@ -148,7 +148,8 @@ class Buddy_Notification_Bell_Public {
 		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
-		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-3x"></i><span>' . number_format_i18n( $count ) . '</span></div>';
+		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
+		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-3x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
 		ob_start();?>
 			<div class='bell_notification_container'>
@@ -161,6 +162,10 @@ class Buddy_Notification_Bell_Public {
 								<a href='<?php echo $notification->href ;?>' class='bnb-notification-text'><?php echo $notification->content;?></a>
 							</li>
 						<?php }?>
+					<?php } else {?>
+							<li>
+								<a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
+							</li>
 					<?php }?>
 					</ul>
 				</div>
