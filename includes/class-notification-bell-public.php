@@ -70,7 +70,8 @@ class Buddy_Notification_Bell_Public {
 	 * @return string $items menu items with buddy notifications bell.
 	 */
 	function place_buddy_notification_bell ( $items, $args ) {
-	    if ( $args->theme_location == 'primary') {
+		$make_default_visible = get_option( 'make_default_visible' );
+	    if ( $args->theme_location == 'primary' && 'yes' !== $make_default_visible ) {
 	        $items .= '<li class="notification-bell-menu">'. $this->jingle_bells_notifications_toolbar_menu() .'</li>';
 	    }
 	    return $items;
