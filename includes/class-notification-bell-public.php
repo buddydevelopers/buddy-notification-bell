@@ -71,7 +71,7 @@ class Buddy_Notification_Bell_Public {
 	 */
 	function place_buddy_notification_bell ( $items, $args ) {
 	    if ( $args->theme_location == 'primary') {
-	        $items .= '<li>'. $this->jingle_bells_notifications_toolbar_menu() .'</li>';
+	        $items .= '<li class="notification-bell-menu">'. $this->jingle_bells_notifications_toolbar_menu() .'</li>';
 	    }
 	    return $items;
 	}
@@ -179,7 +179,7 @@ class Buddy_Notification_Bell_Public {
 							</li>
 						<?php }?>
 					<?php } else {?>
-							<li>
+							<li class="no-new-notifications">
 								<a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
 							</li>
 					<?php }?>

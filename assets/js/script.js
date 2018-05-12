@@ -69,7 +69,9 @@ jQuery(document).ready(function(){
 			}
 			var buddy_list_parent = jq('.notifications_lists_container .notifications_lists');
 			if( buddy_list_parent.get(0) ) {
-				
+				if( jq('.notifications_lists_container .notifications_lists .no-new-notifications').length > 0 ){
+					jq('.notifications_lists_container .notifications_lists .no-new-notifications').remove();
+				}
 				buddy_list_parent.append("<li  class='0'>"+data.messages.join("</li><li>") + "</li>"  );
 					
 			}
