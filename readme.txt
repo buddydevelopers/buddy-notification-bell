@@ -1,24 +1,25 @@
 === Buddy Notification Bell ===
 Contributors: 1naveengiri, buddydevelopers, codex007
+Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress,buddypress notifications, live, notifications, notifications bell, bell
 Requires at least: WordPress 4.5
-Tested up to: BuddyPress 2.9
-Stable tag: 1.0.1
+Tested up to: WordPress 4.9.5 & BuddyPress 2.9.4
+Stable tag: 1.0.2
+Requires PHP: 5.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Buddy Notification Bell convert buddypress notification to buddypress Bell Notification. It show all notification with bell alert and anywhere you want just with one shortcode.
+Buddy Notification Bell convert BuddyPress notification to BuddyPress Bell Notification. It shows all notification with bell alert and anywhere you want just with one shortcode.
 
 == Description ==
 
-This plugin provide a shortcode 
-=== [buddy_notification_bell] === 
-to show notification bell.
-This bell not only show real-time notification but also it will give a notification bell sound alert like we got in facebook on new notification receive.
+Plugin shows all BuddyPress notification with Bell alert. You can place your Notifications Bell anywhere, just with a shortcode [buddy_notification_bell] to show notification bell.
+This bell not only show real-time notification but also it gives a notification bell sound alert. 
+Same like we get in facebook on new notification receive.
 
 == Installation ==
 
-This section describe how to install the plugin and get it working.
+This section describes how to install the plugin and get it working.
 
 
 1. Download the zip file and extract
@@ -47,16 +48,21 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 
 == Changelog ==
 
-= 1.0.0=
-1. Complete rewrite for better code and efficiency. 
-2. Uses WordPress heartbeat api instead of long polling via the ajax. 
-3. Allows theme authors to replace the inbuilt notification UI with notification bell . 
+= 1.0.2=
+1. Hide Notification count when no new notification
+2. Set a default position of bell in menu on Plugin activation
+3. Update Plugin readme
 
 = 1.0.1=
 1. Fix Fatal error when Notification Module is inactive
 2. Code Improvement removed some debugging code.
 3. Add Notice when BuddyPress is inactive
-4. Add Unit Test for the Plug in
+
+= 1.0.0=
+1. Complete rewrite for better code and efficiency. 
+2. Uses WordPress heartbeat api instead of long polling via the ajax. 
+3. Allows theme authors to replace the inbuilt notification UI with notification bell . 
+
 
  == Upgrade Notice ==
-Buddy Notification Bell 1.0.1, Minor release which fixes Fatal error when Notification Module is inactive
+Buddy Notification Bell 1.0.2, Minor release. Tested with new WordPress and BuddyPress versions. Also includes few fixes and plugin readme improvement.
