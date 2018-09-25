@@ -53,10 +53,28 @@ class Buddy_Notification_Bell_Public {
 	 */
 	public function __construct() {
 		add_shortcode( 'buddy_notification_bell', array( $this, 'jingle_bells_notifications_toolbar_menu' ) );
+		
 		add_action( 'wp_enqueue_scripts',array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts',array( $this, 'enqueue_scripts' ) );
 		add_filter( 'heartbeat_received', array( $this, 'bnb_process_notification_request' ), 10, 3 );
 		add_action( 'wp_head', array( $this, 'add_js_global' ) );
+		add_filter( 'wp_nav_menu_items', array( $this, 'place_buddy_notification_bell' ), 10, 2 );
+	}
+
+	/**
+	 * Function to add buddy bell as a menu item.
+	 * 
+	 * @param  string $items menu items
+	 * @param  array $args  menu arguments
+	 * 
+	 * @return string $items menu items with buddy notifications bell.
+	 */
+	function place_buddy_notification_bell ( $items, $args ) {
+		$make_default_visible = get_option( 'make_default_visible' );
+	    if ( $args->theme_location == 'primary' && 'yes' !== $make_default_visible ) {
+	        $items .= '<li class="notification-bell-menu">'. $this->jingle_bells_notifications_toolbar_menu() .'</li>';
+	    }
+	    return $items;
 	}
 
 	/**
@@ -135,7 +153,6 @@ class Buddy_Notification_Bell_Public {
 		return (int) $wpdb->get_var( $query );
 	}
 
-
 	/**
 	 * Function to show notification bell with notification count.
 	 */
@@ -163,7 +180,7 @@ class Buddy_Notification_Bell_Public {
 							</li>
 						<?php }?>
 					<?php } else {?>
-							<li>
+							<li class="no-new-notifications">
 								<a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
 							</li>
 					<?php }?>
@@ -221,8 +238,8 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Get all new notifications after a given time for the current user
 	 *
-	 * @global type $wpdb
-	 * @param type $user_id
+	 * @global array $wpdb
+	 * @param int $user_id
 	 * @param int $last_notified
 	 * @return type
 	 */

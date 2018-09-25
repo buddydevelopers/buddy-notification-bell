@@ -44,7 +44,9 @@ function load_bnb_component_init() {
 	// Allow plugin functionality to work only when Notification module is enabled.
 	if( isset( $bp->notifications ) && !empty( $bp->notifications )){
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-notification-bell-public.php';
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-notification-bell-settings.php';
 		$instance = Buddy_Notification_Bell_Public::get_instance();
+		$instance = Buddy_Notification_Bell_Settings::get_instance();
 	}
 }
 add_action( 'bp_include', 'load_bnb_component_init' );
