@@ -1,5 +1,5 @@
 
-jQuery(document).ready(function(){
+jQuery(document).ready(function(jq){
 
 	//last notified id.
 	var last_notified = bnb.last_notified;
