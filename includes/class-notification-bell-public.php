@@ -120,9 +120,9 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Get the last notification id for the user
 	 *
-	 * @global type $wpdb
-	 * @param type $user_id
-	 * @return type
+	 * @global wpdb $wpdb
+	 * @param int $user_id
+	 * @return int notification_id
 	 */
 	function bnb_get_latest_notification_id( $user_id = false ) {
 
@@ -198,10 +198,10 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Filter on the heartbeat recieved data and inject the new notifications data
 	 *
-	 * @param type $response
-	 * @param type $data
-	 * @param type $screen_id
-	 * @return type
+	 * @param array $response
+	 * @param array $data
+	 * @param int $screen_id
+	 * @return array response
 	 */
 	function bnb_process_notification_request( $response, $data, $screen_id ) {
         
@@ -241,7 +241,7 @@ class Buddy_Notification_Bell_Public {
 	 * @global array $wpdb
 	 * @param int $user_id
 	 * @param int $last_notified
-	 * @return type
+	 * @return array notification data array
 	 */
 
 	function bnb_get_new_notifications( $user_id, $last_notified ) {
