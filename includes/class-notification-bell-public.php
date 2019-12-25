@@ -70,8 +70,8 @@ class Buddy_Notification_Bell_Public {
 	 * @return string $items menu items with buddy notifications bell.
 	 */
 	function place_buddy_notification_bell ( $items, $args ) {
-		$make_default_visible = get_option( 'make_default_visible' );
-	    if ( $args->theme_location == 'primary' && 'yes' !== $make_default_visible ) {
+		$disable_default_visible = get_option( 'make_default_visible' );
+	    if ( $args->theme_location == 'primary' && 'yes' !== $disable_default_visible ) {
 	        $items .= '<li class="notification-bell-menu">'. $this->jingle_bells_notifications_toolbar_menu() .'</li>';
 	    }
 	    return $items;
@@ -166,7 +166,7 @@ class Buddy_Notification_Bell_Public {
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
 		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
-		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-3x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
+		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-2x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
 		ob_start();?>
 			<div class='bell_notification_container'>

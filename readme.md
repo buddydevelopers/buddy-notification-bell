@@ -1,4 +1,4 @@
-#Description
+# Description
 This plugin provide a shortcode
 
 [buddy_notification_bell]

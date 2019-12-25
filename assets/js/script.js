@@ -9,7 +9,7 @@ jQuery(document).ready(function(jq){
 
 	// Set notification drop down.
 	jQuery('.notification_bell').on('click','.bnb-pending-notifications',function(){
-		jQuery('.bell_notification_container .notifications_lists_container').stop().slideToggle();
+		jQuery(this).parents('.bell_notification_container').find('.notifications_lists_container').stop().slideToggle();
 	});
 
 	jQuery(".bell_notification_container").mouseleave(function(){
