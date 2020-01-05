@@ -81,12 +81,42 @@ class Buddy_Notification_Bell_Settings {
 				$make_default_visible = get_option( 'make_default_visible' );
 
 			?>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="donation">
+                <table class="form-table">
+                    <tbody>
+                    <tr>
+                        <th>Plugin Support:</th>
+                        <td>
+                            <div>
+                                <label>
+                                    <p>Buddy Notification Bell is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by <strong>making a small donation</strong>.&nbsp;You get useful software and I get to carry on making it better.</p>
+                                </label>
+                                <input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="naveengiri40@gmail.com">
+                                <input type="hidden" name="item_name" value="Buddy Notification Bell (WordPress Plugin)">
+                                <input type="hidden" name="buyer_credit_promo_code" value="">
+                                <input type="hidden" name="buyer_credit_product_category" value="">
+                                <input type="hidden" name="buyer_credit_shipping_method" value="">
+                                <input type="hidden" name="buyer_credit_user_address_change" value="">
+                                <input type="hidden" name="no_shipping" value="1">
+                                <input type="hidden" name="return" value="<?php echo admin_url('options-general.php?page=buddy-notifications.php#thanks'); ?>">
+                                <input type="hidden" name="no_note" value="1">
+                                <input type="hidden" name="currency_code" value="USD">
+                                <input type="hidden" name="tax" value="0">
+                                <input type="hidden" name="lc" value="US">
+                                <input type="hidden" name="bn" value="PP-DonationsBF">
+                                <div class="donation-amount">$<input type="number" name="amount" min="10" value="15"><span>😀</span><input type="submit" class="button-primary" value="Support 💰"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
 			<form method="post">
 				<table class="form-table">
 					<tbody>
 						<tr>
 							<th scope="row">
-								<label>Disable Default Bell Menu</label>
+								<label><?php _e( 'Disable Default Bell Menu', 'buddy-notification-bell' );  ?></label>
 							</th>
 							<td>
 								<input type="checkbox" name="make_default_visible" value="yes" <?php echo ( isset( $make_default_visible ) && !empty( $make_default_visible ) && 'yes' === $make_default_visible )? 'checked': ''; ?>>
