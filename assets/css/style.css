@@ -1,5 +1,11 @@
+.notification-bell-menu{
+	float: left;
+}
+
 .bell_notification_container .notifications_lists_container{
 	display: none;
+	position: absolute;
+	z-index: 10;
 }
 
 .notification_bell .bnb-pending-notifications{
@@ -10,47 +16,73 @@
 
 .notification_bell .bnb-pending-notifications span{
 	position: absolute;
-	left: 60%;
-	top: 0;
+	right: -8px;
+	top: -8px;
 	color: white;
 	background: #ea0a0a;
 	font-size: 13px;
-	padding: 0 2px;
+	padding: 2px;
+	border-radius: 100px;
+	height: 24px;
+	width: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .notifications_lists_container .notifications_lists{
 	list-style-type: none;
-	position: absolute;
 	margin: 0;
-	padding: 0;	
-	border: 1px solid #ccc;
+	padding: 0;
+	border: 0;
 	background-color: #fff;
 	border-radius: 3px;
-	overflow: hidden;
+	/* overflow: hidden; */
 	max-width: 350px;
-	font-size: .85rem;
+	width: 180px;
+	font-size: 85%;
 	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
 	max-height: 200px;
 	overflow-y: scroll;
+	position: relative;
+	left: inherit;
+	right: 0;
+	display: block;
 }
 
-.notifications_lists_container .notifications_lists li {
-    	padding: .25rem .5rem;
-    	border-bottom: 1px solid #ccc;
-
+.notifications_lists_container .notifications_lists > div {
+	padding: 0px;
+	border: 0;
 }
 
-.notifications_lists_container .notifications_lists li:hover {
+.notifications_lists_container .notifications_lists > div:hover {
 	background-color: #f5f5f5;
 }
 
-.notifications_lists_container  .notifications_lists li:last-child {
-    border-bottom: none;
+.notifications_lists_container  .notifications_lists > div:last-child {
+	border-bottom: none;
 }
 
-.notifications_lists_container .notifications_lists li  a{ 
+.notifications_lists_container .notifications_lists > div a{
 	color: #1d2129;
 	box-shadow: none;
-	padding: 6px 30px 5px 12px;
+	padding: 10px;
 	position: relative;
+	display: block;
+	white-space: normal;
+}
+
+.notifications_lists_container .notifications_lists::-webkit-scrollbar-track{
+	border-radius: 10px;
+	background-color:rgba(208, 208, 208, 0.41);
+}
+
+.notifications_lists_container .notifications_lists::-webkit-scrollbar{
+	width: 3px;
+	background-color: rgba(208, 208, 208, 0.41);
+}
+
+.notifications_lists_container .notifications_lists::-webkit-scrollbar-thumb{
+	border-radius: 10px;
+	background-color: rgba(208, 208, 208, 0.41);
 }

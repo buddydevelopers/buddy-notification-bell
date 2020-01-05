@@ -12,9 +12,13 @@ jQuery(document).ready(function(jq){
 		jQuery(this).parents('.bell_notification_container').find('.notifications_lists_container').stop().slideToggle();
 	});
 
-	jQuery(".bell_notification_container").mouseleave(function(){
+	jQuery(document).mouseup(function () {
+		// rest code here
 		jQuery('.bell_notification_container .notifications_lists_container').slideUp();
 	});
+	// jQuery(".bell_notification_container").mouseleave(function(){
+	// 	jQuery('.bell_notification_container .notifications_lists_container').slideUp();
+	// });
 
 	jQuery(document).on( 'heartbeat-tick', function( event, data ) {
 		if ( data.hasOwnProperty( 'bnb-data' ) ) {
