@@ -73,10 +73,11 @@ class Buddy_Notification_Bell_Public {
 		$disable_default_visible = get_option( 'make_default_visible' );
 		$theme_location = apply_filters('buddy_theme_location', 'primary');
 	    if ( $args->theme_location == $theme_location && 'yes' !== $disable_default_visible ) {
-	        $items .= '<li class="notification-bell-menu">'. $this->jingle_bells_notifications_header_menu() .'</li>';
+	        $items .= '<div class="notification-bell-menu">'. $this->jingle_bells_notifications_header_menu() .'</div>';
 	    }
 	    return $items;
 	}
+
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
