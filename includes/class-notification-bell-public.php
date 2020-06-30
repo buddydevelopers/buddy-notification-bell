@@ -53,29 +53,29 @@ class Buddy_Notification_Bell_Public {
 	 */
 	public function __construct() {
 		add_shortcode( 'buddy_notification_bell', array( $this, 'jingle_bells_notifications_toolbar_menu' ) );
-		
-		add_action( 'wp_enqueue_scripts',array( $this, 'enqueue_styles' ) );
-		add_action( 'wp_enqueue_scripts',array( $this, 'enqueue_scripts' ) );
+
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_filter( 'heartbeat_received', array( $this, 'bnb_process_notification_request' ), 10, 3 );
-		add_action( 'wp_head', array( $this, 'add_js_global' ) );
+		add_action( 'wp_footer', array( $this, 'add_js_global' ) );
 		add_filter( 'wp_nav_menu_items', array( $this, 'place_buddy_notification_bell' ), 10, 2 );
 	}
 
 	/**
 	 * Function to add buddy bell as a menu item.
-	 * 
+	 *
 	 * @param  string $items menu items
-	 * @param  array $args  menu arguments
-	 * 
+	 * @param  array  $args  menu arguments
+	 *
 	 * @return string $items menu items with buddy notifications bell.
 	 */
-	function place_buddy_notification_bell ( $items, $args ) {
+	function place_buddy_notification_bell( $items, $args ) {
 		$disable_default_visible = get_option( 'make_default_visible' );
-		$theme_location = apply_filters('buddy_theme_location', 'primary');
-	    if ( $args->theme_location == $theme_location && 'yes' !== $disable_default_visible ) {
-	        $items .= '<div class="notification-bell-menu">'. $this->jingle_bells_notifications_header_menu() .'</div>';
-	    }
-	    return $items;
+		$theme_location          = apply_filters( 'buddy_theme_location', 'primary' );
+		if ( $args->theme_location == $theme_location && 'yes' !== $disable_default_visible ) {
+			$items .= '<div class="notification-bell-menu">' . $this->jingle_bells_notifications_header_menu() . '</div>';
+		}
+		return $items;
 	}
 
 
@@ -96,14 +96,17 @@ class Buddy_Notification_Bell_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'buddy-script',BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/js/script.js',array( 'jquery', 'heartbeat' ) );
+		wp_enqueue_script( 'buddy-script', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/js/script.js', array( 'jquery', 'heartbeat' ) );
 	}
 
 	public function get_js_settings() {
 
-		return apply_filters( 'bnb_get_js_settings', array(
-				'last_notified' => $this->bnb_get_latest_notification_id(),//please do not change last_notified as we use it to filter the new notifications
-		));
+		return apply_filters(
+			'bnb_get_js_settings',
+			array(
+				'last_notified' => $this->bnb_get_latest_notification_id(), // please do not change last_notified as we use it to filter the new notifications
+			)
+		);
 	}
 
 
@@ -113,10 +116,10 @@ class Buddy_Notification_Bell_Public {
 	public function add_js_global() {
 		?>
 		<script type="text/javascript">
-			var bnb = <?php echo json_encode( $this->get_js_settings() );?>;
+			var bnb = <?php echo json_encode( $this->get_js_settings() ); ?>;
 		</script>
-		<audio id="buzzer" src="<?php echo BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/sounds/Pling-bell.mp3';?>" type="audio/mp3"></audio>
-	<?php
+		<audio id="buzzer" src="<?php echo BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/sounds/Pling-bell.mp3'; ?>" type="audio/mp3"></audio>
+		<?php
 	}
 
 	/**
@@ -161,7 +164,7 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Function to show notification bell with notification count.
 	 */
-	public  function jingle_bells_notifications_toolbar_menu() {
+	public function jingle_bells_notifications_toolbar_menu() {
 
 		if ( ! is_user_logged_in() ) {
 			return false;
@@ -170,28 +173,29 @@ class Buddy_Notification_Bell_Public {
 		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
-		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
+		$hide_count    = (int) $count <= 0 ? 'style="display:none"' : '';
 		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-2x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
-		ob_start();?>
-        <div class='bell_notification_container'>
-            <div class='notification_bell'><?php echo $menu_title;?></div>
-            <div class='notifications_lists_container'>
-                <div class='notifications_lists'>
-					<?php if ( ! empty( $notifications ) ) {?>
+		ob_start();
+		?>
+		<div class='bell_notification_container'>
+			<div class='notification_bell'><?php echo $menu_title; ?></div>
+			<div class='notifications_lists_container'>
+				<div class='notifications_lists'>
+					<?php if ( ! empty( $notifications ) ) { ?>
 						<?php foreach ( (array) $notifications as $notification ) { ?>
-                            <div>
-                                <a href='<?php echo $notification->href ;?>' class='bnb-notification-text'><?php echo $notification->content;?></a>
-                            </div>
-						<?php }?>
-					<?php } else {?>
-                        <div class="no-new-notifications">
-                            <a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
-                        </div>
-					<?php }?>
-                </div>
-            </div>
-        </div>
+							<div>
+								<a href='<?php echo $notification->href; ?>' class='bnb-notification-text'><?php echo $notification->content; ?></a>
+							</div>
+						<?php } ?>
+					<?php } else { ?>
+						<div class="no-new-notifications">
+							<a href='<?php echo $menu_link; ?>' class='bnb-notification-text'><?php echo __( 'No new notifications', 'buddy-notification-bell' ); ?></a>
+						</div>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
 		<?php
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -201,7 +205,7 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Function to show notification bell with notification count.
 	 */
-	public  function jingle_bells_notifications_header_menu() {
+	public function jingle_bells_notifications_header_menu() {
 
 		if ( ! is_user_logged_in() ) {
 			return false;
@@ -210,28 +214,29 @@ class Buddy_Notification_Bell_Public {
 		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
-		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
+		$hide_count    = (int) $count <= 0 ? 'style="display:none"' : '';
 		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-2x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
-		ob_start();?>
-        <div class='bell_notification_container'>
-            <div class='notification_bell'><?php echo $menu_title;?></div>
-            <div class='notifications_lists_container'>
-                <div class='notifications_lists'>
-					<?php if ( ! empty( $notifications ) ) {?>
+		ob_start();
+		?>
+		<div class='bell_notification_container'>
+			<div class='notification_bell'><?php echo $menu_title; ?></div>
+			<div class='notifications_lists_container'>
+				<div class='notifications_lists'>
+					<?php if ( ! empty( $notifications ) ) { ?>
 						<?php foreach ( (array) $notifications as $notification ) { ?>
-                            <div>
-                                <a href='<?php echo $notification->href ;?>' class='bnb-notification-text'><?php echo $notification->content;?></a>
-                            </div>
-						<?php }?>
-					<?php } else {?>
-                        <div class="no-new-notifications">
-                            <a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
-                        </div>
-					<?php }?>
-                </div>
-            </div>
-        </div>
+							<div>
+								<a href='<?php echo $notification->href; ?>' class='bnb-notification-text'><?php echo $notification->content; ?></a>
+							</div>
+						<?php } ?>
+					<?php } else { ?>
+						<div class="no-new-notifications">
+							<a href='<?php echo $menu_link; ?>' class='bnb-notification-text'><?php echo __( 'No new notifications', 'buddy-notification-bell' ); ?></a>
+						</div>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
 		<?php
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -245,14 +250,14 @@ class Buddy_Notification_Bell_Public {
 	 *
 	 * @param array $response
 	 * @param array $data
-	 * @param int $screen_id
+	 * @param int   $screen_id
 	 * @return array response
 	 */
 	function bnb_process_notification_request( $response, $data, $screen_id ) {
-        
+
 		if ( isset( $data['bnb-data'] ) ) {
 
-			$notifications = array();
+			$notifications    = array();
 			$notification_ids = array();
 
 			$request = $data['bnb-data'];
@@ -261,22 +266,25 @@ class Buddy_Notification_Bell_Public {
 
 			if ( ! empty( $request ) ) {
 
-				$notifications = $this->bnb_get_new_notifications( get_current_user_id(),  $last_notified_id );
+				$notifications = $this->bnb_get_new_notifications( get_current_user_id(), $last_notified_id );
 
 				$notification_ids = wp_list_pluck( $notifications, 'id' );
 
 				$notifications = $this->bnb_get_notification_messages( $notifications );
 
 			}
-			//include our last notified id to the list
+			// include our last notified id to the list
 			$notification_ids[] = $last_notified_id;
-			//find the max id that we are sending with this request
+			// find the max id that we are sending with this request
 			$last_notified_id = max( $notification_ids );
 
-			$response['bnb-data'] = array( 'messages' => $notifications, 'last_notified' => $last_notified_id );
+			$response['bnb-data'] = array(
+				'messages'      => $notifications,
+				'last_notified' => $last_notified_id,
+			);
 
-	    }
-	    return $response;
+		}
+		return $response;
 	}
 
 
@@ -316,7 +324,6 @@ class Buddy_Notification_Bell_Public {
 
 	/**
 	 * Get a list of processed messages
-	 *
 	 */
 	function bnb_get_notification_messages( $notifications ) {
 

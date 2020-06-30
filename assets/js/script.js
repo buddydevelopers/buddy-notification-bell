@@ -41,7 +41,7 @@ jQuery(document).ready(function(jq){
 
 	jQuery( document ).on('bnb:new_notifications', function(evt, data ){
 			
-		if( data.count && data.count>0 ){
+		if( data.count && data.count > 0 ){
 			
 			update_count_text( jq('#ab-pending-notifications'), data.count );
 			update_count_text( jq('.bnb-pending-notifications span'), data.count );
@@ -68,15 +68,15 @@ jQuery(document).ready(function(jq){
 				if(list_parent.has('wp-admin-bar-no-notifications')){
 					list_parent.find('#wp-admin-bar-no-notifications').remove();
 				}
-				list_parent.append("<div class='0'>"+data.messages.join("</div><div>") + "</div>" );
-				list_parent.find("div > a").addClass("ab-item");
+				list_parent.append("<li class='0'>"+data.messages.join("</li><li>") + "</li>" );
+				list_parent.find("li > a").addClass("ab-item");
 			}
 			var buddy_list_parent = jq('.notifications_lists_container .notifications_lists');
 			if( buddy_list_parent.get(0) ) {
 				if( jq('.notifications_lists_container .notifications_lists .no-new-notifications').length > 0 ){
 					jq('.notifications_lists_container .notifications_lists .no-new-notifications').remove();
 				}
-				buddy_list_parent.append("<div  class='0'>"+data.messages.join("</div><div>") + "</div>"  );
+				buddy_list_parent.append("<li  class='0'>"+data.messages.join("</li><li>") + "</li>"  );
 					
 			}
 		}
@@ -92,14 +92,12 @@ jQuery(document).ready(function(jq){
 		elements.each( function() {
 			var element = jq(this);
 			jq(element).show();
-			var current_count = parseInt( element.text() );
-			
-			current_count = current_count + parseInt(count) - 0;
-		
-			element.text( '' + current_count );
+			if(element.text() != '') {
+				var current_count = parseInt( element.text() );			
+				current_count = current_count + parseInt(count) - 0;
+				element.text( '' + current_count );
+			}
 		});
-		
-		
 	}
 
 
