@@ -73,7 +73,7 @@ class Buddy_Notification_Bell_Public {
 		$disable_default_visible = get_option( 'make_default_visible' );
 		$theme_location = apply_filters('buddy_theme_location', 'primary');
 	    if ( $args->theme_location == $theme_location && 'yes' !== $disable_default_visible ) {
-	        $items .= '<div class="notification-bell-menu">'. $this->jingle_bells_notifications_header_menu() .'</div>';
+	        $items .= '<div class="notification-bell-menu">'. $this->jingle_bells_notifications_toolbar_menu() .'</div>';
 	    }
 	    return $items;
 	}
@@ -86,7 +86,7 @@ class Buddy_Notification_Bell_Public {
 	 */
 	public function enqueue_styles() {
 		// Add font-awesome stylesheet.
-		wp_enqueue_style( 'font-awesome', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/css/font-awesome.css' );
+		wp_enqueue_style( 'font-awesome', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . '/vendor/components/font-awesome/css/all.css' );
 		wp_enqueue_style( 'buddy-style', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/css/style.css' );
 	}
 
@@ -158,9 +158,6 @@ class Buddy_Notification_Bell_Public {
 	/**
 	 * Function to show notification bell with notification count.
 	 */
-	/**
-	 * Function to show notification bell with notification count.
-	 */
 	public  function jingle_bells_notifications_toolbar_menu() {
 
 		if ( ! is_user_logged_in() ) {
@@ -168,11 +165,16 @@ class Buddy_Notification_Bell_Public {
 		}
 
 		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
+		// var_dump($notifications);
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
 		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
-		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-2x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
+		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '">' . apply_filters( 'buddy_bell_icon', '<i class="far fa-bell fa-2x"></i>' ) . '<span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
+
+		$output = apply_filters( 'buddy_notification_output', '', $notifications );
+		if( $output ) return $output;
+
 		ob_start();?>
         <div class='bell_notification_container'>
             <div class='notification_bell'><?php echo $menu_title;?></div>
@@ -197,48 +199,6 @@ class Buddy_Notification_Bell_Public {
 		ob_end_clean();
 		return $output;
 	}
-
-	/**
-	 * Function to show notification bell with notification count.
-	 */
-	public  function jingle_bells_notifications_header_menu() {
-
-		if ( ! is_user_logged_in() ) {
-			return false;
-		}
-
-		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
-		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
-		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
-		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
-		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '"><i class="fa fa-bell-o fa-2x"></i><span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
-		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
-		ob_start();?>
-        <div class='bell_notification_container'>
-            <div class='notification_bell'><?php echo $menu_title;?></div>
-            <div class='notifications_lists_container'>
-                <div class='notifications_lists'>
-					<?php if ( ! empty( $notifications ) ) {?>
-						<?php foreach ( (array) $notifications as $notification ) { ?>
-                            <div>
-                                <a href='<?php echo $notification->href ;?>' class='bnb-notification-text'><?php echo $notification->content;?></a>
-                            </div>
-						<?php }?>
-					<?php } else {?>
-                        <div class="no-new-notifications">
-                            <a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
-                        </div>
-					<?php }?>
-                </div>
-            </div>
-        </div>
-		<?php
-		$output = ob_get_contents();
-		ob_end_clean();
-		return $output;
-	}
-
-
 
 	/**
 	 * Filter on the heartbeat recieved data and inject the new notifications data
@@ -360,9 +320,9 @@ class Buddy_Notification_Bell_Public {
 
 			// Allow non BuddyPress components to hook in
 		} else {
-
+			
 			/** This filter is documented in bp-notifications/bp-notifications-functions.php */
-			$description = apply_filters_ref_array( 'bp_notifications_get_notifications_for_user', array( $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1 ) );
+			 $description = apply_filters_ref_array( 'bp_notifications_get_notifications_for_user', array( $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1, 'string', $notification->component_action, $notification->component_name, $notification->id ) );
 		}
 
 		/**

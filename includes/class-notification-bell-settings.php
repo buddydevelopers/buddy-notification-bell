@@ -89,7 +89,7 @@ class Buddy_Notification_Bell_Settings {
                         <td>
                             <div>
                                 <label>
-                                    <p>Buddy Notification Bell is free to use - life is wonderful and lovely! It has required a great deal of time and effort to develop and you can help support this development by <strong>making a small donation</strong>.&nbsp;You get useful software and I get to carry on making it better.</p>
+									<p><?php echo wp_kses_post( 'Buddy Notification Bell is a free plugin. if you want to support my work? Buy me a coffee.' ); ?></p>
                                 </label>
                                 <input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="naveengiri40@gmail.com">
                                 <input type="hidden" name="item_name" value="Buddy Notification Bell (WordPress Plugin)">
@@ -104,7 +104,7 @@ class Buddy_Notification_Bell_Settings {
                                 <input type="hidden" name="tax" value="0">
                                 <input type="hidden" name="lc" value="US">
                                 <input type="hidden" name="bn" value="PP-DonationsBF">
-                                <div class="donation-amount">$<input type="number" name="amount" min="10" value="15"><span>😀</span><input type="submit" class="button-primary" value="Support 💰"></div>
+                                <div class="donation-amount">$<input type="number" name="amount" min="5" value="9.99"><span>😀</span><input type="submit" class="button-primary" value="Support 💰"></div>
                             </div>
                         </td>
                     </tr>
