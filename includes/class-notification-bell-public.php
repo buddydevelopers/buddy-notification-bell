@@ -169,7 +169,7 @@ class Buddy_Notification_Bell_Public {
 		$count         = ! empty( $notifications ) ? count( $notifications ) : 0;
 		$alert_class   = (int) $count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
 		$hide_count = (int) $count <= 0 ? 'style="display:none"': '';
-		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '">' . apply_filters( 'buddy_bell_icon', '<i class="fa fa-bell-o fa-2x"></i>' ) . '<span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
+		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '">' . apply_filters( 'buddy_bell_icon', '<i class="far fa-bell fa-2x"></i>' ) . '<span ' . $hide_count . '>' . number_format_i18n( $count ) . '</span></div>';
 		$menu_link     = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
 
 		$output = apply_filters( 'buddy_notification_output', '', $notifications );
@@ -320,9 +320,9 @@ class Buddy_Notification_Bell_Public {
 
 			// Allow non BuddyPress components to hook in
 		} else {
-
+			
 			/** This filter is documented in bp-notifications/bp-notifications-functions.php */
-			$description = apply_filters_ref_array( 'bp_notifications_get_notifications_for_user', array( $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1 ) );
+			 $description = apply_filters_ref_array( 'bp_notifications_get_notifications_for_user', array( $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1, 'string', $notification->component_action, $notification->component_name, $notification->id ) );
 		}
 
 		/**

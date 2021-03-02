@@ -1,10 +1,10 @@
 === Buddy Notification Bell ===
 Contributors: 1naveengiri, buddydevelopers, codex007
 Donate link: https://www.paypal.me/1naveengiri/500
-Tags: buddypress,buddypress notifications, live, notifications, notifications bell, bell
+Tags: buddypress, buddypress notifications, notifications, notifications bell, facebook like notification
 Requires at least: WordPress 4.5
-Tested up to: WordPress 5.3.2
-Stable tag: 1.0.2
+Tested up to: WordPress 5.6.2
+Stable tag: 1.0.3
 Requires PHP: 5.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -45,16 +45,22 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 
 1. Notification Bell with Notification Drop down by BuddyDeveloper[http://buddydevelopers.com]
 2. Short code to show the Bell Icon.
+3. setting to enable disable notification bell in primary menu.
 
 == Changelog ==
 
-= 1.0.2=
+= 1.0.3 =
+1. Test plugin with latest wp and bp.
+2. Fix error for bbPress Notifications.
+3. update readme
+
+= 1.0.2 =
 1. Tested with BuddyPress 5.1.2
 2. Hide Notification count when no new notification
 3. Set a default position of bell in primary menu on Plugin activation
 4. Update Plugin readme issues
 
-= 1.0.1=
+= 1.0.1 =
 1. Fix Fatal error when Notification Module is inactive
 2. Code Improvement removed some debugging code.
 3. Add Notice when BuddyPress is inactive
