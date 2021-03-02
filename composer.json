@@ -1,0 +1,12 @@
+{
+    "name": "naveengiri/buddy-notification-bell",
+    "require": {
+        "components/font-awesome": "^5.15"
+    },
+    "authors": [
+        {
+            "name": "Naveen giri",
+            "email": "1naveengiri@gmail.com"
+        }
+    ]
+}

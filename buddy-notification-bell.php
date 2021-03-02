@@ -62,3 +62,16 @@ function bnb_admin_notice() {
 	<?php }
 }
 add_action( 'admin_notices', 'bnb_admin_notice' );
+
+function buddy_bell_plugin_settings_link($links) { 
+	$addition_option = array(
+		'Settings'  => 'options-general.php?page=buddy-notifications.php',
+		'Hire Us'	=> 'https://buddydevelopers.com'
+
+	);
+	foreach( $addition_option as $key => $value ){
+		$links[] = '<a href="'. $value .'">'. $key .'</a>';
+	}
+	return $links; 
+}
+add_filter("plugin_action_links_".plugin_basename(__FILE__), 'buddy_bell_plugin_settings_link' );

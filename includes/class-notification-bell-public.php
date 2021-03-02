@@ -86,7 +86,7 @@ class Buddy_Notification_Bell_Public {
 	 */
 	public function enqueue_styles() {
 		// Add font-awesome stylesheet.
-		wp_enqueue_style( 'font-awesome', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/css/font-awesome.css' );
+		wp_enqueue_style( 'font-awesome', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . '/vendor/components/font-awesome/css/all.css' );
 		wp_enqueue_style( 'buddy-style', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'assets/css/style.css' );
 	}
 
