@@ -24,6 +24,12 @@
  * Domain Path: /languages
  */
 
+/**
+ * This file is the main file of plugin that define contant and call the loader.
+ *
+ * @since 2.0.0
+ * @package bnb
+ */
 // If this file is called directly, abort.
 defined( 'ABSPATH' ) || exit;
 
@@ -36,3 +42,5 @@ if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
 	define( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH',  plugin_dir_path( __FILE__ ) );
 }
 
+// Load the plugin files
+require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/bnb-loader.php';
