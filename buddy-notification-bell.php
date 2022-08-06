@@ -44,3 +44,6 @@ if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
 
 // Load the plugin files
 require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/class-loader.php';
+
+// add install and uninstall operation
+// add locel files rendering
