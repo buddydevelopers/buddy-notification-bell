@@ -43,4 +43,4 @@ if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
 }
 
 // Load the plugin files
-require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/bnb-loader.php';
+require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/class-loader.php';
