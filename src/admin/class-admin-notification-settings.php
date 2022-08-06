@@ -22,7 +22,7 @@ class Admin_Notification_Settings {
     /**
 	 * Class constructor
 	 */
-	private function __construct() {
+	public function __construct() {
 
 	}
 	
