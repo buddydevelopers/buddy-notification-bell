@@ -35,8 +35,9 @@ class Loader {
 	private function include() {
 		// include others files here.
 		// Load the create CPT file
-		require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/admin/class-admin-broadcast-notification.php';
 		require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/admin/class-admin-notification-settings.php';
+		// require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/admin/class-admin-broadcast-notification.php';
+		require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/public/class-notification-bell-public.php';
 	}
 }
 $instance = new Loader();
