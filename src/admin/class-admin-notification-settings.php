@@ -15,11 +15,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * @package    BNB
  * @subpackage BNB/SETTINGS
- * @author     buddydevelopers <buddydevelopers@gmail.com> 
+ * @author     buddydevelopers <buddydevelopers@gmail.com>
  * @since 2.0.0
  */
 class Admin_Notification_Settings {
-    /**
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {
@@ -80,7 +80,7 @@ class Admin_Notification_Settings {
 	}
 
 	/**
-	 *	All Notification menu callback
+	 *  All Notification menu callback
 	 */
 	public function broadcast_notifications() {
 		?>
@@ -90,7 +90,7 @@ class Admin_Notification_Settings {
 		<?php
 	}
 	/**
-	 *	Add Notification menu callback
+	 *  Add Notification menu callback
 	 */
 	public function add_notifications() {
 		?>
@@ -104,7 +104,7 @@ class Admin_Notification_Settings {
 				// (sections are registered for "wporg", each field is registered to a specific section)
 				do_settings_sections( 'wporg' );
 				// output save settings button
-				submit_button( __( 'Save Settings', 'textdomain' ) );
+				submit_button( __( 'Save Settings', 'buddy-notification-bell' ) );
 				?>
 			</form>
 		</div>
@@ -118,6 +118,46 @@ class Admin_Notification_Settings {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<?php
+			// check user capabilities
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			// Get the active tab from the $_GET param
+			$default_tab = null;
+			$tab         = isset( $_GET['tab'] ) ? $_GET['tab'] : $default_tab;
+
+			?>
+			<!-- Here are our tabs -->
+			<?php
+			$tabs = array(
+				'general'  => __( 'General', "buddy-notification-bell" ),
+				'notifications'     => __( 'Notifications', "buddy-notification-bell" ),
+			);
+			?>
+			<nav class="nav-tab-wrapper">
+				<?php
+				foreach( $tabs as $key => $value ) {
+					$active_class = ( $key === $tab || ( empty( $tab ) && 'general' === $key ) ) ? 'nav-tab-active' : '';
+					echo '<a href="?page=settings_bnb_notification&tab=' . esc_attr( $key ) . '" class="nav-tab ' . $active_class . '">' . esc_attr( $value ) . '</a>';
+				}
+				?>
+			</nav>
+			<form method="post" id="buddy-bnb-settings" action="">
+				<div class="buddy-bnb-tab-content">
+					<?php
+					switch ( $tab ) {
+						case 'notifications':
+							echo 'Settings'; // Put your HTML here
+							break;
+						default:
+							echo 'General tab';
+							break;
+					}
+					?>
+				</div>
+			</form>
 		</div>
 		<?php
 	}
