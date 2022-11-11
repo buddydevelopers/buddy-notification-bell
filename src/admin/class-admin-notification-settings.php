@@ -31,6 +31,51 @@ class Admin_Notification_Settings {
 	public function init() {
 		// Add the top level menu with name "WP Notifications".
 		$this->add_menu();
+		$this->add_tabs();
+	}
+
+	/**
+	 * Add settings tabs
+	 */
+	public function add_tabs() {
+		add_action( 'buddy_bnb_notifications_tab', array( $this, 'notifications_tab' ), 10, 1 );
+		add_action( 'buddy_bnb_general_tab', array( $this, 'general_tab' ), 10, 1 );
+	}
+
+	/**
+	 * Notification tab callback
+	 */
+	public function notifications_tab( $tab ) {
+		$section  = isset( $_GET['section'] ) ? $_GET['section'] : '';
+		$active_class = ( $key === $section || ( empty( $section ) && 'general' === $key ) ) ? 'nav-tab-active' : '';
+		$sub_tabs = array(
+			''  => __( 'General', "buddy-notification-bell" ),
+			'buddypress'     => __( 'BuddyPress', "buddy-notification-bell" ),
+		);
+		?>
+		<div class="clearfix d-flex align-content-center flex-wrap">
+			<ul class="subsubsub m-0 p-0">
+				<?php
+				foreach( $sub_tabs as $key => $value ) {
+					$active_class = ( $key === $section || ( empty( $section ) && 'general' === $key ) ) ? 'current' : '';
+					echo '<li><a href="?page=settings_bnb_notification&tab=' . $tab . '&section=' . $key . '" class="' . $active_class . '">' . $value . '</a> | </li>';
+				}
+				?>
+			</ul>
+			<div class="buddy-bnb-sub-tab-content">
+				<?php
+				do_action( 'buddy_bnb_' . $section . '_sub_tab', $tab );
+				?>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Notification tab callback
+	 */
+	public function general_tab( $tab ) {
+		echo 'General'; // Put your HTML here
 	}
 
 	/**
@@ -125,7 +170,7 @@ class Admin_Notification_Settings {
 			}
 
 			// Get the active tab from the $_GET param
-			$default_tab = null;
+			$default_tab = 'general';
 			$tab         = isset( $_GET['tab'] ) ? $_GET['tab'] : $default_tab;
 
 			?>
@@ -147,14 +192,7 @@ class Admin_Notification_Settings {
 			<form method="post" id="buddy-bnb-settings" action="">
 				<div class="buddy-bnb-tab-content">
 					<?php
-					switch ( $tab ) {
-						case 'notifications':
-							echo 'Settings'; // Put your HTML here
-							break;
-						default:
-							echo 'General tab';
-							break;
-					}
+					do_action( 'buddy_bnb_' . $tab . '_tab', $tab );
 					?>
 				</div>
 			</form>
