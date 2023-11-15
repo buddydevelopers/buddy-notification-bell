@@ -1,0 +1,4 @@
+.toplevel_page_bnb_notification > .dashicons-bell::before {
+    color: #f4db1c !important;
+    font-size: 24px;
+}

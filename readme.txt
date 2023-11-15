@@ -3,9 +3,9 @@ Contributors: 1naveengiri, buddydevelopers, codex007
 Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddypress notifications, notifications, notifications bell, facebook like notification
 Requires at least: WordPress 4.5
-Tested up to: WordPress 5.6.2
-Stable tag: 1.0.3
-Requires PHP: 5.6
+Tested up to: WordPress 6.0.1
+Stable tag: 2.0.0
+Requires PHP: >= 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
