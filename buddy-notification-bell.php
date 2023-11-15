@@ -43,7 +43,24 @@ if ( ! defined( 'BUDDY_NOTIFICATION_BELL_PLUGINS_PATH' ) ) {
 }
 
 // Load the plugin files
-require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/class-loader.php';
+require_once BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . 'src/bnb-loader.php';
 
-// add install and uninstall operation.
-// add locel files rendering.
+/**  Create custom table */
+function buddy_notification_bell_init() {
+	global $wpdb;
+
+	$table_name = $wpdb->prefix . 'bnb_notifications';
+	$sql = "CREATE TABLE $table_name (
+				id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				user_id bigint(20) NOT NULL,
+				item_id bigint(20) NOT NULL,
+				secondary_item_id bigint(20) NOT NULL,
+				component_name varchar(75) NOT NULL,
+				component_action varchar(75) NOT NULL,
+				date_notified datetime NOT NULL,
+				is_new bool NOT NULL DEFAULT 0
+			);";
+	include_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	dbDelta( $sql );
+}
+register_activation_hook( __FILE__, 'buddy_notification_bell_init' );

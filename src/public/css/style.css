@@ -14,7 +14,7 @@
 	display: inline-block;
 }
 
-.notification_bell .bnb-pending-notifications span{
+.notification_bell .bnb-alert span{
 	position: absolute;
 	right: -8px;
 	top: -8px;
@@ -23,11 +23,14 @@
 	font-size: 13px;
 	padding: 2px;
 	border-radius: 100px;
-	height: 24px;
-	width: 24px;
+	height: 17px;
+	width: 17px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+.notification_bell .bnb-no-alert span{
+	display: none;
 }
 
 .notifications_lists_container .notifications_lists{
