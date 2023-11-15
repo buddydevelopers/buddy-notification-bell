@@ -37,6 +37,7 @@ class Buddy_Notification_Bell_Public {
 	public function init() {
 		add_filter( 'wp_nav_menu_items', array( $this, 'bnb_add_notification_bell_menu_item' ), 10, 2 );
 		add_action( 'comment_post', array( $this, 'bnb_insert_new_commentdata' ), 10, 3 );
+		add_action( 'transition_comment_status', array( $this, 'bnb_transition_comment_status' ), 10, 3 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
@@ -47,7 +48,7 @@ class Buddy_Notification_Bell_Public {
 	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( 'buddy-style-pro', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/css/style.css' );
+		wp_enqueue_style( 'buddy-bnb-style', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/css/style.css' );
 	}
 
 	/**
@@ -56,19 +57,49 @@ class Buddy_Notification_Bell_Public {
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'buddy-script-pro', BUDDY_PRO_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/notify-realtime.js', array( 'jquery', 'heartbeat' ) );
-		wp_enqueue_script( 'buddy-script-pro', BUDDY_PRO_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/script.js', array( 'jquery' ) );
+		wp_enqueue_script( 'buddy-bnb-notify-realtime-script', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/notify-realtime.js', array( 'jquery', 'heartbeat' ) );
+		wp_enqueue_script( 'buddy-bnb-script', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/script.js', array( 'jquery' ) );
 	}
-
+	
+	/**
+	 * Add comment notification in table when a comment is marked as approved.
+	 *
+	 * @param  string $new_status New comment status
+	 * @param  string $old_status Old comment status
+	 * @param  array $commentdata All comment data
+	 */
+	public function bnb_transition_comment_status( $new_status, $old_status, $commentdata ) {
+		if ( $old_status != $new_status ) {
+			if ( $new_status == 'approved' ) {
+				// Convert the comment object into an array
+				$comment_array = array(
+					'comment_ID'            => $commentdata->comment_ID,
+					'comment_post_ID'       => $commentdata->comment_post_ID,
+					'comment_author'        => $commentdata->comment_author,
+					'comment_author_email'  => $commentdata->comment_author_email,
+					'comment_author_url'    => $commentdata->comment_author_url,
+					'comment_content'       => $commentdata->comment_content,
+					'comment_type'          => $commentdata->comment_type,
+					'comment_parent'        => $commentdata->comment_parent,
+					'comment_approved'      => $commentdata->comment_approved,
+					'comment_date'          => $commentdata->comment_date,
+					'new_status'            => $new_status,
+					'old_status'            => $old_status,
+				);
+				$comment_approved = 1;
+				$this->bnb_insert_new_commentdata( $commentdata->comment_ID, $comment_approved, $comment_array );
+			}
+		}
+	}
 	/**
 	 * Add notification when a new comment is added on a post
 	 *
 	 * @param  int $comment_ID Comment ID
 	 * @param  int $comment_approved Comment approved status
-	 * @param  array $args  menu arguments
-	 *
+	 * @param  array $commentdata All comment data
 	 */
 	function bnb_insert_new_commentdata( $comment_ID, $comment_approved, $commentdata ) {
+		error_log( print_r($commentdata, true ));
 		if ( 1 === $comment_approved ) {
 			global $wpdb;
 
