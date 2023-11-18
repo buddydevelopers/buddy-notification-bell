@@ -187,17 +187,35 @@ class Buddy_Notification_Bell_Public {
 	}
 
 	/**
-	 * Return current user unread notification count
+	 * Return current user unread notification count( WordPress + BuddyPress )
 	 * 
 	 * @return int $notification_count Notification count
 	 */
 	public function bnb_user_notification_count(){
-		$user_id = get_current_user_id();
-		global $wpdb;
-		$table = $wpdb->prefix . 'bnb_notifications';
-		$query = "SELECT Count(*) FROM {$table} WHERE user_id = %d AND is_new = %d";
-		$query = $wpdb->prepare( $query, $user_id, 1 );
-		return (int) $wpdb->get_var( $query );
+		/**
+		 **** Done ***
+		 *
+		 * * Cache the count and clear them only when user have a new Notification.
+		 * 
+		 */
+		$cache_key = 'buddy_bnb_notification_count';
+		$count = wp_cache_get( $cache_key );
+		if ( false === $count ) {
+			$user_id = get_current_user_id();
+			global $wpdb;
+			$table = $wpdb->prefix . 'bnb_notifications';
+			$query = "SELECT Count(*) FROM {$table} WHERE user_id = %d AND is_new = %d";
+			$query = $wpdb->prepare( $query, $user_id, 1 );
+			$count  = (int) $wpdb->get_var( $query );
+			// Include BuddyPress Notifications counts.
+			if( function_exists( 'bp_notifications_get_notifications_for_user' ) ){
+				$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
+				$count  += ! empty( $notifications ) ? count( $notifications ) : 0;
+			}
+			wp_cache_set( $cache_key, $count, '', 0 );
+		}
+
+		return $count;
 	}
 }
 
