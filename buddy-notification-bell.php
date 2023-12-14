@@ -75,3 +75,11 @@ function buddy_bell_plugin_settings_link($links) {
 	return $links; 
 }
 add_filter("plugin_action_links_".plugin_basename(__FILE__), 'buddy_bell_plugin_settings_link' );
+
+/**
+ * Load language translations files for text domain.
+ */
+function bd_bnb_load_text_domain(){
+	load_plugin_textdomain( 'buddy-notification-bell', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+add_action( 'plugins_loaded', 'bd_bnb_load_text_domain' );
