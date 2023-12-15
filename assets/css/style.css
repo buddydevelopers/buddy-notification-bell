@@ -2,6 +2,9 @@
 	float: left;
 }
 
+header .bell_notification_container .notifications_lists_container{
+	right: 0;
+}
 .bell_notification_container .notifications_lists_container{
 	display: none;
 	position: absolute;
