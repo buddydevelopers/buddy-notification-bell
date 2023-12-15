@@ -57,6 +57,10 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 
 == Changelog ==
 
+= 1.0.4 =
+1. Add plugin translation files
+2. Fix style issues for bell notification container
+
 = 1.0.3 =
 1. Test plugin with latest wp and bp.
 2. Fix error for bbPress Notifications.
