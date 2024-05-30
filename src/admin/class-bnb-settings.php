@@ -33,6 +33,7 @@ class BNB_Settings {
 		$this->add_menu();
 		$this->add_tabs();
 		$this->load_assets();
+		register_setting('buddy_bnb_settings_group', 'buddy_bnb_general_settings');
 	}
 
 	/**
@@ -78,9 +79,14 @@ class BNB_Settings {
 				?>
 			</ul>
 			<div class="buddy-bnb-sub-tab-content">
-				<?php
-				do_action( 'buddy_bnb_' . $section . '_sub_tab', $tab );
-				?>
+				
+				<form method="post" action="options.php">
+            <?php
+            settings_fields('buddy_bnb_settings_group');
+			do_action( 'buddy_bnb_' . $section . '_sub_tab', $tab );
+            
+            ?>
+        </form>
 			</div>
 		</div>
 		<?php
@@ -90,7 +96,14 @@ class BNB_Settings {
 	 * Notification tab callback
 	 */
 	public function general_tab( $tab ) {
-		echo __( 'General', 'buddy-notification-bell' ); // Put your HTML here
+		$options = get_option('buddy_bnb_general_settings');
+		$checked = isset($options['notification_enable']) ? 'checked' : '';
+    ?>
+	<div class="wrapper">
+   <span><?php _e( 'Enable notification:', 'buddy-notification-bell'); ?></span> <input type="checkbox" name="buddy_bnb_general_settings[notification_enable]" <?php echo $checked; ?>>
+    </div>
+	<?php
+
 	}
 
 	/**
@@ -170,10 +183,12 @@ class BNB_Settings {
 				}
 				?>
 			</nav>
-			<form method="post" id="buddy-bnb-settings" action="">
+			<form method="post" id="buddy-bnb-settings" action="options.php">
 				<div class="buddy-bnb-tab-content">
 					<?php
+					settings_fields('buddy_bnb_settings_group');
 					do_action( 'buddy_bnb_' . $tab . '_tab', $tab );
+					submit_button();
 					?>
 				</div>
 			</form>

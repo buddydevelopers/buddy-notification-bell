@@ -35,9 +35,14 @@ class Buddy_Notification_Bell_Public {
 	 * Function to initialse the class work.
 	 */
 	public function init() {
-		add_filter( 'wp_nav_menu_items', array( $this, 'bnb_add_notification_bell_menu_item' ), 10, 2 );
-		add_action( 'comment_post', array( $this, 'bnb_insert_new_commentdata' ), 10, 3 );
-		add_action( 'transition_comment_status', array( $this, 'bnb_transition_comment_status' ), 10, 3 );
+		$options             = get_option('buddy_bnb_general_settings');
+		$notification_enable = $options['notification_enable'];
+		if('on' === $notification_enabled ){
+			add_filter( 'wp_nav_menu_items', array( $this, 'bnb_add_notification_bell_menu_item' ), 10, 2 );
+			add_action( 'comment_post', array( $this, 'bnb_insert_new_commentdata' ), 10, 3 );
+			add_action( 'transition_comment_status', array( $this, 'bnb_transition_comment_status' ), 10, 3 );
+		}
+		
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
