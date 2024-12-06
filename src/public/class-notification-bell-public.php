@@ -36,6 +36,8 @@ class Buddy_Notification_Bell_Public {
 	 */
 	public function init() {
 		add_filter( 'wp_nav_menu_items', array( $this, 'bnb_add_notification_bell_menu_item' ), 10, 2 );
+		add_filter( 'heartbeat_received', array( $this, 'bnb_process_notification_request' ), 10, 3 );
+		add_action( 'wp_head', array( $this, 'bnb_added_global_js' ) );
 		add_action( 'comment_post', array( $this, 'bnb_insert_new_commentdata' ), 10, 3 );
 		add_action( 'transition_comment_status', array( $this, 'bnb_transition_comment_status' ), 10, 3 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
@@ -59,6 +61,61 @@ class Buddy_Notification_Bell_Public {
 	public function enqueue_scripts() {
 		wp_enqueue_script( 'buddy-bnb-notify-realtime-script', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/notify-realtime.js', array( 'jquery', 'heartbeat' ) );
 		wp_enqueue_script( 'buddy-bnb-script', BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/public/js/script.js', array( 'jquery' ) );
+	}
+
+	public function bnb_get_js_settings() {
+
+		return apply_filters( 'bnb_get_js_settings', array(
+				'last_notified' => $this->bnb_get_latest_notification_id(),//please do not change last_notified as we use it to filter the new notifications
+		));
+	}
+
+	/**
+	 * Get the last notification id for the user
+	 *
+	 * @global wpdb $wpdb
+	 * @param int $user_id
+	 * @return int notification_id
+	 */
+	public function bnb_get_latest_notification_id( $user_id = false ) {
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		global $wpdb;
+
+		$bp = buddypress();
+
+		$table = $bp->notifications->table_name;
+
+		$registered_components = bp_notifications_get_registered_components();
+
+		$components_list = array();
+
+		foreach ( $registered_components as $component ) {
+			$components_list[] = $wpdb->prepare( '%s', $component );
+		}
+
+		$components_list = implode( ',', $components_list );
+
+		$query = "SELECT MAX(id) FROM {$table} WHERE user_id = %d AND component_name IN ({$components_list}) AND is_new = %d ";
+
+		$query = $wpdb->prepare( $query, $user_id, 1 );
+
+		return (int) $wpdb->get_var( $query );
+	}
+
+	/**
+	 * Add global bpln object
+	 */
+	public function bnb_added_global_js() {
+		?>
+		<script type="text/javascript">
+			var bnb = <?php echo json_encode( $this->bnb_get_js_settings() );?>;
+		</script>
+		<audio id="buzzer" src="<?php echo BUDDY_NOTIFICATION_BELL_PLUGINS_URL . 'src/bell/sounds/bell.mp3';?>" type="audio/mp3"></audio>
+	<?php
 	}
 	
 	/**
@@ -98,7 +155,7 @@ class Buddy_Notification_Bell_Public {
 	 * @param  int $comment_approved Comment approved status
 	 * @param  array $commentdata All comment data
 	 */
-	function bnb_insert_new_commentdata( $comment_ID, $comment_approved, $commentdata ) {
+	public function bnb_insert_new_commentdata( $comment_ID, $comment_approved, $commentdata ) {
 		error_log( print_r($commentdata, true ));
 		if ( 1 === $comment_approved ) {
 			global $wpdb;
@@ -164,7 +221,7 @@ class Buddy_Notification_Bell_Public {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-
+		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
 		$notifications_count = $this->bnb_user_notification_count(); 
 		$alert_class   = (int) $notifications_count > 0 ? 'bnb-pending-count bnb-alert' : 'bnb-count bnb-no-alert';
 		$menu_title    = '<div class="bnb-pending-notifications ' . $alert_class . '">' . apply_filters( 'buddy_bell_icon', '<svg width="20" height="20" class="wnbell_icon" aria-hidden="true" focusable="false" data-prefix="far" data-icon="bell" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -176,7 +233,17 @@ class Buddy_Notification_Bell_Public {
             <div class='notification_bell'><?php echo $menu_title;?></div>
             <div class='notifications_lists_container'>
                 <div class='notifications_lists'>
-					<!-- Notification lists appears here -->
+					<?php if ( ! empty( $notifications ) ) {?>
+						<?php foreach ( (array) $notifications as $notification ) { ?>
+                            <div>
+                                <a href='<?php echo $notification->href ;?>' class='bnb-notification-text'><?php echo $notification->content;?></a>
+                            </div>
+						<?php }?>
+					<?php } else {?>
+                        <div class="no-new-notifications">
+                            <a href='<?php echo $menu_link;?>' class='bnb-notification-text'><?php echo __('No new notifications', 'buddy-notification-bell'); ?></a>
+                        </div>
+					<?php }?>
                 </div>
             </div>
         </div>
@@ -217,6 +284,139 @@ class Buddy_Notification_Bell_Public {
 
 		return $count;
 	}
+
+	/**
+	 * Filter on the heartbeat recieved data and inject the new notifications data
+	 *
+	 * @param array $response
+	 * @param array $data
+	 * @param int $screen_id
+	 * @return array response
+	 */
+	public function bnb_process_notification_request( $response, $data, $screen_id ) {
+        
+		if ( isset( $data['bnb-data'] ) ) {
+
+			$notifications = array();
+			$notification_ids = array();
+
+			$request = $data['bnb-data'];
+
+			$last_notified_id = absint( $request['last_notified'] );
+
+			if ( ! empty( $request ) ) {
+
+				$notifications = $this->bnb_get_new_notifications( get_current_user_id(),  $last_notified_id );
+
+				$notification_ids = wp_list_pluck( $notifications, 'id' );
+
+				$notifications = $this->bnb_get_notification_messages( $notifications );
+
+			}
+			//include our last notified id to the list
+			$notification_ids[] = $last_notified_id;
+			//find the max id that we are sending with this request
+			$last_notified_id = max( $notification_ids );
+
+			$response['bnb-data'] = array( 'messages' => $notifications, 'last_notified' => $last_notified_id );
+
+	    }
+	    return $response;
+	}
+
+	/**
+	 * Get all new notifications after a given time for the current user
+	 *
+	 * @global array $wpdb
+	 * @param int $user_id
+	 * @param int $last_notified
+	 * @return array notification data array
+	 */
+	public function bnb_get_new_notifications( $user_id, $last_notified ) {
+
+		global $wpdb;
+
+		$bp = buddypress();
+
+		$table = $bp->notifications->table_name;
+
+		$registered_components = bp_notifications_get_registered_components();
+
+		$components_list = array();
+
+		foreach ( $registered_components as $component ) {
+			$components_list[] = $wpdb->prepare( '%s', $component );
+		}
+
+		$components_list = implode( ',', $components_list );
+
+		$query = "SELECT * FROM {$table} WHERE user_id = %d AND component_name IN ({$components_list}) AND id > %d AND is_new = %d ";
+
+		$query = $wpdb->prepare( $query, $user_id, $last_notified, 1 );
+
+		return $wpdb->get_results( $query );
+	}
+
+	/**
+	 * Get a list of processed messages
+	 *
+	 */
+	public function bnb_get_notification_messages( $notifications ) {
+
+		$messages = array();
+
+		if ( empty( $notifications ) ) {
+			return $messages;
+		}
+
+		$total_notifications = count( $notifications );
+
+		for ( $i = 0; $i < $total_notifications; $i++ ) {
+
+			$notification = $notifications[ $i ];
+
+			$messages[] = $this->bnb_get_the_notification_description( $notification );
+
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * A copy of bp_get_the_notification_description to server our purpose of parsing notification to extract the message
+	 *
+	 * @see bp_get_the_notification_description
+	 * @param type $notification
+	 * @return type
+	 */
+	public function bnb_get_the_notification_description( $notification ) {
+
+		$bp = buddypress();
+
+		// Callback function exists
+		if ( isset( $bp->{ $notification->component_name }->notification_callback ) && is_callable( $bp->{ $notification->component_name }->notification_callback ) ) {
+			$description = call_user_func( $bp->{ $notification->component_name }->notification_callback, $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1 );
+
+		} elseif ( isset( $bp->{ $notification->component_name }->format_notification_function ) && function_exists( $bp->{ $notification->component_name }->format_notification_function ) ) {
+			$description = call_user_func( $bp->{ $notification->component_name }->format_notification_function, $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1 );
+
+			// Allow non BuddyPress components to hook in
+		} else {
+			
+			/** This filter is documented in bp-notifications/bp-notifications-functions.php */
+			 $description = apply_filters_ref_array( 'bp_notifications_get_notifications_for_user', array( $notification->component_action, $notification->item_id, $notification->secondary_item_id, 1, 'string', $notification->component_action, $notification->component_name, $notification->id ) );
+		}
+
+		/**
+		 * Filters the full-text description for a specific notification.
+		 *
+		 * @since BuddyPress (1.9.0)
+		 *
+		 * @param string $description Full-text description for a specific notification.
+		 */
+		return apply_filters( 'bp_get_the_notification_description', $description );
+	}
+
 }
 
 new Buddy_Notification_Bell_Public();
