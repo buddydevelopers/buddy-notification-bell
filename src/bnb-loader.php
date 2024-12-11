@@ -21,6 +21,16 @@ require BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . '/src/admin/class-bnb-settings.ph
 require BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . '/src/public/class-notification-bell-public.php';
 
 /**
+ *  Check if buddypress activate.
+ */
+function bnb_check_buddypress_actiavted_or_not() {
+	if ( class_exists( 'BuddyPress' ) ) {
+		require BUDDY_NOTIFICATION_BELL_PLUGINS_PATH . '/src/public/class-bp-notification-bell.php';
+	}
+}
+add_action( 'plugins_loaded', 'bnb_check_buddypress_actiavted_or_not' );
+
+/**
  * 1. Store notifications in the DB
  * 2. handle WordPress notifications
  * 3. Load them when the bell icon is clicked
