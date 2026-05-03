@@ -68,7 +68,7 @@ add_action( 'admin_notices', 'bnb_admin_notice' );
  * Add Settings and Hire Us links on the plugins list page.
  */
 function bd_bnb_plugin_action_links( $links ) {
-	$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=buddy-notifications' ) ) . '">' . esc_html__( 'Settings', 'buddy-notification-bell' ) . '</a>';
+	$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=buddy-notification-bell' ) ) . '">' . esc_html__( 'Settings', 'buddy-notification-bell' ) . '</a>';
 	$links[] = '<a href="' . esc_url( 'https://buddydevelopers.com' ) . '" target="_blank">' . esc_html__( 'Hire Us', 'buddy-notification-bell' ) . '</a>';
 	return $links;
 }

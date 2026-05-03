@@ -25,7 +25,7 @@ class BD_BNB_Settings {
 	 */
 	public static function suppress_external_notices() {
 		$screen = get_current_screen();
-		if ( ! $screen || 'toplevel_page_buddy-notifications' !== $screen->id ) {
+		if ( ! $screen || 'toplevel_page_buddy-notification-bell' !== $screen->id ) {
 			return;
 		}
 		add_action( 'admin_notices', array( __CLASS__, 'output_page_notices' ), -999 );
@@ -43,7 +43,7 @@ class BD_BNB_Settings {
 	public static function menu_icon_color() {
 		?>
 		<style>
-			#toplevel_page_buddy-notifications .wp-menu-image::before {
+			#toplevel_page_buddy-notification-bell .wp-menu-image::before {
 				color: #f0640c !important;
 			}
 		</style>
@@ -58,7 +58,7 @@ class BD_BNB_Settings {
 			__( 'Notification', 'buddy-notification-bell' ),
 			__( 'Notification', 'buddy-notification-bell' ),
 			'manage_options',
-			'buddy-notifications',
+			'buddy-notification-bell',
 			array( __CLASS__, 'render_page' ),
 			'dashicons-bell',
 			30
@@ -162,7 +162,7 @@ class BD_BNB_Settings {
 	 * @param string $hook
 	 */
 	public static function enqueue_admin_assets( $hook ) {
-		if ( 'toplevel_page_buddy-notifications' !== $hook ) {
+		if ( 'toplevel_page_buddy-notification-bell' !== $hook ) {
 			return;
 		}
 
@@ -205,15 +205,15 @@ class BD_BNB_Settings {
 			</div>
 
 			<nav class="nav-tab-wrapper bnb-nav-tabs">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notifications&tab=general' ) ); ?>"
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=general' ) ); ?>"
 				   class="nav-tab <?php echo 'general' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'General', 'buddy-notification-bell' ); ?>
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notifications&tab=display' ) ); ?>"
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=display' ) ); ?>"
 				   class="nav-tab <?php echo 'display' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'Display', 'buddy-notification-bell' ); ?>
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notifications&tab=shortcode' ) ); ?>"
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=shortcode' ) ); ?>"
 				   class="nav-tab <?php echo 'shortcode' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'Shortcode', 'buddy-notification-bell' ); ?>
 				</a>
