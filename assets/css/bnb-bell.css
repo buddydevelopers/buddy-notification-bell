@@ -1,0 +1,384 @@
+/* ==========================================================================
+   Buddy Notification Bell — Frontend Styles
+   Mobile-first. Override CSS variables on .bnb-bell-wrapper to theme.
+   ========================================================================== */
+
+/* ── CSS Variables ───────────────────────────────────────────────────────── */
+
+.bnb-bell-wrapper {
+	--bnb-accent:           #0073aa;
+	--bnb-badge-bg:         #cc1818;
+	--bnb-panel-bg:         #ffffff;
+	--bnb-panel-shadow:     0 8px 24px rgba(0, 0, 0, 0.15);
+	--bnb-panel-width:      100%;
+	--bnb-panel-radius:     10px;
+	--bnb-unread-border:    3px solid #0073aa;
+	--bnb-item-hover-bg:    #f5f5f5;
+	--bnb-text-primary:     #1d2129;
+	--bnb-text-secondary:   #65676b;
+	--bnb-font-size:        14px;
+	--bnb-border-color:     #e4e6eb;
+	--bnb-bell-size:        22px;
+
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* ── Size variants ───────────────────────────────────────────────────────── */
+
+.bnb-size-small  { --bnb-bell-size: 18px; }
+.bnb-size-normal { --bnb-bell-size: 22px; }
+.bnb-size-large  { --bnb-bell-size: 28px; }
+
+/* ── Bell button ─────────────────────────────────────────────────────────── */
+
+.bnb-bell-button {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 6px;
+	border-radius: 50%;
+	color: inherit;
+	line-height: 1;
+	transition: background 0.2s ease;
+}
+
+.bnb-bell-button:hover,
+.bnb-bell-button:focus-visible {
+	background: rgba(0, 0, 0, 0.06);
+	outline: none;
+}
+
+.bnb-bell-icon {
+	display: block;
+	width: var(--bnb-bell-size);
+	height: var(--bnb-bell-size);
+}
+
+/* ── Count badge ─────────────────────────────────────────────────────────── */
+
+.bnb-count {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border-radius: 9px;
+	background: var(--bnb-badge-bg);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 18px;
+	text-align: center;
+	pointer-events: none;
+	transform: translate(40%, -30%);
+}
+
+/* ── Bell ring animation ─────────────────────────────────────────────────── */
+
+@keyframes bnb-ring {
+	0%   { transform: rotate(0deg); }
+	10%  { transform: rotate(15deg); }
+	20%  { transform: rotate(-13deg); }
+	30%  { transform: rotate(11deg); }
+	40%  { transform: rotate(-9deg); }
+	50%  { transform: rotate(7deg); }
+	60%  { transform: rotate(-5deg); }
+	70%  { transform: rotate(3deg); }
+	80%  { transform: rotate(-1deg); }
+	100% { transform: rotate(0deg); }
+}
+
+.bnb-bell-ringing .bnb-bell-icon {
+	animation: bnb-ring 0.8s ease forwards;
+	transform-origin: top center;
+}
+
+/* ── Dropdown panel ──────────────────────────────────────────────────────── */
+
+.bnb-dropdown {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	max-height: 100vh;
+	overflow-y: auto;
+	background: var(--bnb-panel-bg);
+	z-index: 9999;
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 0.18s ease, transform 0.18s ease;
+	pointer-events: none;
+}
+
+.bnb-dropdown:not([hidden]) {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+/* ── Dropdown header ─────────────────────────────────────────────────────── */
+
+.bnb-dropdown-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px 10px;
+	border-bottom: 1px solid var(--bnb-border-color);
+	position: sticky;
+	top: 0;
+	background: var(--bnb-panel-bg);
+	z-index: 1;
+}
+
+.bnb-dropdown-title {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--bnb-text-primary);
+	line-height: 1;
+}
+
+.bnb-mark-all-read {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: var(--bnb-accent);
+	font-size: 13px;
+	font-weight: 600;
+	padding: 4px 0;
+	line-height: 1;
+	transition: opacity 0.15s ease;
+}
+
+.bnb-mark-all-read:hover {
+	opacity: 0.75;
+}
+
+/* ── Notification list ───────────────────────────────────────────────────── */
+
+.bnb-notification-list {
+	padding: 6px 0;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────────── */
+
+.bnb-loading {
+	padding: 20px 16px;
+	text-align: center;
+	color: var(--bnb-text-secondary);
+	font-size: 13px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.bnb-empty {
+	padding: 32px 16px;
+	text-align: center;
+}
+
+.bnb-empty p {
+	color: var(--bnb-text-secondary);
+	font-size: 13px;
+	margin: 0;
+}
+
+/* ── Notification item ───────────────────────────────────────────────────── */
+
+.bnb-notification-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 12px 16px;
+	cursor: pointer;
+	transition: background 0.15s ease;
+	border-bottom: 1px solid var(--bnb-border-color);
+}
+
+.bnb-notification-item:last-child {
+	border-bottom: none;
+}
+
+.bnb-notification-item:hover {
+	background: var(--bnb-item-hover-bg);
+}
+
+.bnb-notification-item.bnb-unread {
+	border-left: var(--bnb-unread-border);
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────────────── */
+
+.bnb-avatar {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	object-fit: cover;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+
+.bnb-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.bnb-message {
+	font-size: var(--bnb-font-size);
+	color: var(--bnb-text-primary);
+	line-height: 1.4;
+	margin: 0 0 4px;
+	white-space: normal;
+	word-break: break-word;
+}
+
+.bnb-notification-item.bnb-unread .bnb-message {
+	font-weight: 600;
+}
+
+.bnb-time {
+	font-size: 12px;
+	color: var(--bnb-accent);
+	font-weight: 600;
+}
+
+/* ── Dismiss button ──────────────────────────────────────────────────────── */
+
+.bnb-dismiss {
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+	line-height: 1;
+	color: var(--bnb-text-secondary);
+	padding: 0 2px;
+	flex-shrink: 0;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.bnb-notification-item:hover .bnb-dismiss {
+	opacity: 1;
+}
+
+.bnb-dismiss:hover {
+	color: var(--bnb-text-primary);
+}
+
+/* ── Dropdown footer ─────────────────────────────────────────────────────── */
+
+.bnb-dropdown-footer {
+	border-top: 1px solid var(--bnb-border-color);
+	text-align: center;
+	padding: 12px;
+	position: sticky;
+	bottom: 0;
+	background: var(--bnb-panel-bg);
+}
+
+.bnb-see-all {
+	display: inline-block;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bnb-accent);
+	text-decoration: none;
+	transition: opacity 0.15s ease;
+}
+
+.bnb-see-all:hover {
+	opacity: 0.75;
+	text-decoration: none;
+	color: var(--bnb-accent);
+}
+
+/* ── Menu item wrapper ───────────────────────────────────────────────────── */
+
+li.bnb-menu-item {
+	display: inline-flex !important;
+	align-items: center;
+	list-style: none;
+}
+
+/* ── Floating bell ───────────────────────────────────────────────────────── */
+
+.bnb-floating-wrap {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 9999;
+}
+
+.bnb-floating-wrap .bnb-bell-button {
+	width: 52px;
+	height: 52px;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	color: #1d2129;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.bnb-floating-wrap .bnb-bell-button:hover {
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+	transform: translateY(-2px);
+	background: #fff;
+}
+
+.bnb-floating-wrap .bnb-bell-icon {
+	width: 24px;
+	height: 24px;
+}
+
+/* ── Tablet and up (>= 480px) ────────────────────────────────────────────── */
+
+@media ( min-width: 480px ) {
+	.bnb-dropdown {
+		position: absolute;
+		top: calc(100% + 10px);
+		left: auto;
+		right: 0;
+		bottom: auto;
+		width: 380px;
+		max-height: 480px;
+		border-radius: var(--bnb-panel-radius);
+		border: 1px solid var(--bnb-border-color);
+		box-shadow: var(--bnb-panel-shadow);
+	}
+
+	/* Left-aligned dropdown */
+	.bnb-position-left .bnb-dropdown {
+		right: auto;
+		left: 0;
+	}
+
+	/* Floating bell panel opens upward */
+	.bnb-floating-wrap .bnb-dropdown {
+		top: auto;
+		bottom: calc(100% + 10px);
+		right: 0;
+	}
+
+	.bnb-notification-list {
+		overflow-y: auto;
+		max-height: 340px;
+	}
+
+	.bnb-notification-list::-webkit-scrollbar {
+		width: 4px;
+	}
+	.bnb-notification-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.bnb-notification-list::-webkit-scrollbar-thumb {
+		background: #ccc;
+		border-radius: 4px;
+	}
+}

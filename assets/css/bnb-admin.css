@@ -1,0 +1,100 @@
+/* ==========================================================================
+   Buddy Notification Bell — Admin Settings Styles
+   ========================================================================== */
+
+.bnb-settings-wrap {
+	max-width: 780px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.bnb-settings-header {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+	margin-bottom: 6px;
+}
+
+.bnb-settings-header h1 {
+	margin-bottom: 0;
+}
+
+.bnb-settings-version {
+	color: #888;
+	font-size: 12px;
+	margin: 0;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+
+.bnb-nav-tabs {
+	margin-bottom: 0;
+}
+
+/* ── Settings body ───────────────────────────────────────────────────────── */
+
+.bnb-settings-body {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	border-radius: 0 0 4px 4px;
+	padding: 24px;
+}
+
+.bnb-settings-body .form-table th {
+	width: 240px;
+	padding: 16px 10px 16px 0;
+}
+
+.bnb-settings-body .form-table td {
+	padding: 12px 10px;
+}
+
+/* ── Shortcode tab ───────────────────────────────────────────────────────── */
+
+.bnb-shortcode-info {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.bnb-info-card {
+	border: 1px solid #e0e0e0;
+	border-radius: 6px;
+	padding: 18px 20px;
+	background: #fafafa;
+}
+
+.bnb-info-card h3 {
+	margin: 0 0 8px;
+	font-size: 14px;
+}
+
+.bnb-info-card p {
+	margin: 0 0 12px;
+	color: #555;
+	font-size: 13px;
+}
+
+.bnb-shortcode-box {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 10px 14px;
+}
+
+.bnb-shortcode-box code {
+	flex: 1;
+	font-size: 13px;
+	background: none;
+	padding: 0;
+	color: #0a66c2;
+	word-break: break-all;
+}
+
+.bnb-copy-btn {
+	flex-shrink: 0;
+}
