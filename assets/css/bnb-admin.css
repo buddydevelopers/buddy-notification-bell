@@ -2,99 +2,292 @@
    Buddy Notification Bell — Admin Settings Styles
    ========================================================================== */
 
-.bnb-settings-wrap {
-	max-width: 780px;
+:root {
+	--bnb-orange:        #f0640c;
+	--bnb-orange-dark:   #d4550a;
+	--bnb-orange-light:  #fff6f0;
+	--bnb-orange-border: #f9c5a0;
+	--bnb-text:          #1d2327;
+	--bnb-text-muted:    #646970;
+	--bnb-border:        #c3c4c7;
+	--bnb-row-sep:       #f0f0f0;
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────── */
+/* ── Page wrap ───────────────────────────────────────────────────────────── */
+
+.bnb-settings-wrap {
+	max-width: 860px;
+}
+
+/* ── Suppress unrelated admin notices on our page ────────────────────────── */
+
+.toplevel_page_buddy-notifications .notice:not(.notice-success):not(.notice-error),
+.toplevel_page_buddy-notifications .update-nag,
+.toplevel_page_buddy-notifications .updated.notice:not(.notice-success) {
+	display: none !important;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
 
 .bnb-settings-header {
-	display: flex;
-	align-items: baseline;
-	gap: 12px;
-	margin-bottom: 6px;
+	display:        flex;
+	align-items:    center;
+	gap:            16px;
+	margin-bottom:  0;
+	padding:        22px 28px;
+	background:     linear-gradient(135deg, #1d2327 0%, #2c3338 100%);
+	border-radius:  8px 8px 0 0;
+	border-left:    5px solid var(--bnb-orange);
 }
 
-.bnb-settings-header h1 {
-	margin-bottom: 0;
+.bnb-settings-icon {
+	width:      38px;
+	height:     38px;
+	color:      var(--bnb-orange);
+	flex-shrink: 0;
+}
+
+.bnb-settings-header-text {
+	flex: 1;
+}
+
+.bnb-settings-header-text h1 {
+	margin:      0;
+	padding:     0;
+	color:       #fff;
+	font-size:   22px;
+	line-height: 1.2;
 }
 
 .bnb-settings-version {
-	color: #888;
-	font-size: 12px;
-	margin: 0;
+	color:      #aaa;
+	font-size:  12px;
+	margin:     3px 0 0;
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 
 .bnb-nav-tabs {
-	margin-bottom: 0;
+	margin-bottom:    0;
+	border-bottom:    2px solid var(--bnb-border);
+	background:       #f6f7f7;
+	padding:          0 20px;
+}
+
+.bnb-nav-tabs .nav-tab {
+	margin-bottom:   -2px;
+	padding:         10px 16px;
+	font-size:       13px;
+	font-weight:     500;
+	color:           var(--bnb-text-muted);
+	border-bottom:   3px solid transparent;
+	border-top:      none;
+	border-left:     none;
+	border-right:    none;
+	background:      transparent;
+	transition:      color 0.15s, border-color 0.15s;
+}
+
+.bnb-nav-tabs .nav-tab:hover {
+	color:        var(--bnb-orange);
+	background:   transparent;
+	border-color: transparent;
+}
+
+.bnb-nav-tabs .nav-tab-active,
+.bnb-nav-tabs .nav-tab-active:focus,
+.bnb-nav-tabs .nav-tab-active:hover {
+	color:            var(--bnb-orange) !important;
+	border-bottom:    3px solid var(--bnb-orange) !important;
+	background:       #fff !important;
+	border-top:       none !important;
+	border-left:      none !important;
+	border-right:     none !important;
 }
 
 /* ── Settings body ───────────────────────────────────────────────────────── */
 
 .bnb-settings-body {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-top: none;
-	border-radius: 0 0 4px 4px;
-	padding: 24px;
+	background:    #fff;
+	border:        1px solid var(--bnb-border);
+	border-top:    none;
+	border-radius: 0 0 8px 8px;
+	padding:       0 28px 24px;
+}
+
+/* ── Form table ──────────────────────────────────────────────────────────── */
+
+.bnb-settings-body .form-table {
+	margin-top: 0;
+	width:      100%;
 }
 
 .bnb-settings-body .form-table th {
-	width: 240px;
-	padding: 16px 10px 16px 0;
+	width:        210px;
+	padding:      20px 20px 20px 0;
+	color:        var(--bnb-text);
+	font-size:    13px;
+	font-weight:  600;
+	vertical-align: top;
 }
 
 .bnb-settings-body .form-table td {
-	padding: 12px 10px;
+	padding:        16px 0;
+	vertical-align: top;
+}
+
+.bnb-settings-body .form-table tr {
+	border-bottom: 1px solid var(--bnb-row-sep);
+}
+
+.bnb-settings-body .form-table tr:last-child {
+	border-bottom: none;
+}
+
+.bnb-settings-body p.description {
+	color:      var(--bnb-text-muted);
+	font-size:  12px;
+	margin-top: 7px;
+	line-height: 1.5;
+}
+
+/* ── Checkboxes & Radios ─────────────────────────────────────────────────── */
+
+.bnb-settings-body input[type="checkbox"],
+.bnb-settings-body input[type="radio"] {
+	accent-color: var(--bnb-orange);
+	width:        15px;
+	height:       15px;
+	cursor:       pointer;
+	flex-shrink:  0;
+	margin-top:   2px;
+}
+
+.bnb-settings-body label {
+	display:     flex;
+	align-items: flex-start;
+	gap:         8px;
+	cursor:      pointer;
+	font-size:   13px;
+	color:       var(--bnb-text);
+	line-height: 1.5;
+}
+
+.bnb-settings-body fieldset label {
+	margin-bottom: 10px;
+}
+
+.bnb-settings-body fieldset label:last-child {
+	margin-bottom: 0;
+}
+
+/* ── Select ──────────────────────────────────────────────────────────────── */
+
+.bnb-settings-body select {
+	min-width:     200px;
+	border:        1px solid var(--bnb-border);
+	border-radius: 4px;
+	height:        34px;
+	font-size:     13px;
+	padding:       0 8px;
+	color:         var(--bnb-text);
+	background:    #fff;
+}
+
+.bnb-settings-body select:focus {
+	border-color: var(--bnb-orange);
+	box-shadow:   0 0 0 1px var(--bnb-orange);
+	outline:      none;
+}
+
+/* ── Submit button ───────────────────────────────────────────────────────── */
+
+.bnb-settings-body .submit {
+	padding:    20px 0 6px;
+	border-top: 1px solid var(--bnb-row-sep);
+	margin-top: 4px;
+}
+
+.bnb-settings-body .button-primary {
+	background:    var(--bnb-orange) !important;
+	border-color:  var(--bnb-orange) !important;
+	color:         #fff !important;
+	font-size:     13px !important;
+	font-weight:   500 !important;
+	padding:       7px 20px !important;
+	height:        auto !important;
+	border-radius: 5px !important;
+	box-shadow:    0 1px 3px rgba(240, 100, 12, 0.25) !important;
+	transition:    background 0.15s, box-shadow 0.15s !important;
+}
+
+.bnb-settings-body .button-primary:hover,
+.bnb-settings-body .button-primary:focus {
+	background:  var(--bnb-orange-dark) !important;
+	border-color: var(--bnb-orange-dark) !important;
+	box-shadow:  0 2px 6px rgba(240, 100, 12, 0.4) !important;
 }
 
 /* ── Shortcode tab ───────────────────────────────────────────────────────── */
 
 .bnb-shortcode-info {
-	display: flex;
+	display:        flex;
 	flex-direction: column;
-	gap: 16px;
+	gap:            16px;
+	padding-top:    4px;
 }
 
 .bnb-info-card {
-	border: 1px solid #e0e0e0;
+	border:        1px solid var(--bnb-orange-border);
+	border-left:   4px solid var(--bnb-orange);
 	border-radius: 6px;
-	padding: 18px 20px;
-	background: #fafafa;
+	padding:       20px 24px;
+	background:    var(--bnb-orange-light);
 }
 
 .bnb-info-card h3 {
-	margin: 0 0 8px;
-	font-size: 14px;
+	margin:     0 0 6px;
+	font-size:  14px;
+	color:      var(--bnb-text);
+	font-weight: 600;
 }
 
 .bnb-info-card p {
-	margin: 0 0 12px;
-	color: #555;
-	font-size: 13px;
+	margin:     0 0 14px;
+	color:      var(--bnb-text-muted);
+	font-size:  13px;
+	line-height: 1.5;
 }
 
 .bnb-shortcode-box {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	background: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	padding: 10px 14px;
+	display:       flex;
+	align-items:   center;
+	gap:           10px;
+	background:    #fff;
+	border:        1px solid var(--bnb-orange-border);
+	border-radius: 5px;
+	padding:       10px 14px;
 }
 
 .bnb-shortcode-box code {
-	flex: 1;
-	font-size: 13px;
+	flex:       1;
+	font-size:  13px;
 	background: none;
-	padding: 0;
-	color: #0a66c2;
+	padding:    0;
+	color:      var(--bnb-orange);
 	word-break: break-all;
 }
 
-.bnb-copy-btn {
-	flex-shrink: 0;
+.bnb-copy-btn.button {
+	background:    var(--bnb-orange) !important;
+	border-color:  var(--bnb-orange) !important;
+	color:         #fff !important;
+	border-radius: 4px !important;
+	flex-shrink:   0;
+	font-size:     12px !important;
+}
+
+.bnb-copy-btn.button:hover {
+	background:   var(--bnb-orange-dark) !important;
+	border-color: var(--bnb-orange-dark) !important;
 }
