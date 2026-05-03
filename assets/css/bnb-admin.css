@@ -16,7 +16,7 @@
 /* ── Page wrap ───────────────────────────────────────────────────────────── */
 
 .bnb-settings-wrap {
-	max-width: 860px;
+	max-width: 1100px;
 }
 
 /* ── Suppress unrelated admin notices on our page ────────────────────────── */
@@ -112,7 +112,18 @@
 	border:        1px solid var(--bnb-border);
 	border-top:    none;
 	border-radius: 0 0 8px 8px;
-	padding:       0 28px 24px;
+	padding:       4px 28px 24px;
+}
+
+.bnb-settings-body h2 {
+	font-size:     13px;
+	font-weight:   600;
+	color:         var(--bnb-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin:        18px 0 0;
+	padding:       0 0 10px;
+	border-bottom: 1px solid var(--bnb-row-sep);
 }
 
 /* ── Form table ──────────────────────────────────────────────────────────── */
