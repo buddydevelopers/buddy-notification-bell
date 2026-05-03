@@ -16,6 +16,25 @@ class BD_BNB_Settings {
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_assets' ) );
 		add_action( 'admin_head', array( __CLASS__, 'menu_icon_color' ) );
+		add_action( 'current_screen', array( __CLASS__, 'suppress_external_notices' ) );
+	}
+
+	/**
+	 * On our settings page: run first in admin_notices, output settings_errors,
+	 * then wipe all remaining notice callbacks so third-party notices never render.
+	 */
+	public static function suppress_external_notices() {
+		$screen = get_current_screen();
+		if ( ! $screen || 'toplevel_page_buddy-notifications' !== $screen->id ) {
+			return;
+		}
+		add_action( 'admin_notices', array( __CLASS__, 'output_page_notices' ), -999 );
+	}
+
+	public static function output_page_notices() {
+		settings_errors();
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
 	}
 
 	/**
