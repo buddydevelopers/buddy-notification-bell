@@ -20,10 +20,12 @@
 }
 
 /* ── Suppress unrelated admin notices on our page ────────────────────────── */
+/* Keep: .updated, .notice-success, .notice-error, .settings-error (Settings saved, errors) */
+/* Hide: .notice-info, .notice-warning from themes/plugins (e.g. "install recommended plugins") */
 
-.toplevel_page_buddy-notifications .notice:not(.notice-success):not(.notice-error),
-.toplevel_page_buddy-notifications .update-nag,
-.toplevel_page_buddy-notifications .updated.notice:not(.notice-success) {
+.toplevel_page_buddy-notifications .notice-info:not(.settings-error),
+.toplevel_page_buddy-notifications .notice-warning:not(.settings-error),
+.toplevel_page_buddy-notifications .update-nag {
 	display: none !important;
 }
 

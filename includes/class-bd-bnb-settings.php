@@ -172,7 +172,6 @@ class BD_BNB_Settings {
 		}
 
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		settings_errors( 'bnb_' . $active_tab );
 		?>
 		<div class="wrap bnb-settings-wrap">
 
