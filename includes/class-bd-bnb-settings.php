@@ -11,6 +11,15 @@ if ( ! defined( 'WPINC' ) ) {
 
 class BD_BNB_Settings {
 
+	/**
+	 * Returns true when BuddyBoss Platform is active.
+	 *
+	 * @return bool
+	 */
+	public static function is_buddyboss_active() {
+		return defined( 'BP_PLATFORM_VERSION' );
+	}
+
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -123,6 +132,29 @@ class BD_BNB_Settings {
 			'bnb_general'
 		);
 
+		// BuddyBoss section — only when platform is active.
+		if ( self::is_buddyboss_active() ) {
+			add_settings_section(
+				'bnb_buddyboss',
+				__( 'BuddyBoss Integration', 'buddy-notification-bell' ),
+				'__return_false',
+				'bnb_buddyboss'
+			);
+
+			register_setting( 'bnb_buddyboss', 'bnb_buddyboss_mode', array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
+				'default'           => '',
+			) );
+
+			add_settings_field(
+				'bnb_buddyboss_mode',
+				__( 'Use BuddyBoss Notification Panel', 'buddy-notification-bell' ),
+				array( __CLASS__, 'field_buddyboss_mode' ),
+				'bnb_buddyboss',
+				'bnb_buddyboss'
+			);
+		}
+
 		// Display section.
 		add_settings_section(
 			'bnb_display',
@@ -217,11 +249,25 @@ class BD_BNB_Settings {
 				   class="nav-tab <?php echo 'shortcode' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'Shortcode', 'buddy-notification-bell' ); ?>
 				</a>
+				<?php if ( self::is_buddyboss_active() ) : ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=buddyboss' ) ); ?>"
+				   class="nav-tab <?php echo 'buddyboss' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'BuddyBoss', 'buddy-notification-bell' ); ?>
+				</a>
+				<?php endif; ?>
 			</nav>
 
 			<div class="bnb-settings-body">
 				<?php if ( 'shortcode' === $active_tab ) : ?>
 					<?php self::render_shortcode_tab(); ?>
+				<?php elseif ( 'buddyboss' === $active_tab && self::is_buddyboss_active() ) : ?>
+					<form method="post" action="options.php">
+						<?php
+						settings_fields( 'bnb_buddyboss' );
+						do_settings_sections( 'bnb_buddyboss' );
+						submit_button( __( 'Save Changes', 'buddy-notification-bell' ) );
+						?>
+					</form>
 				<?php else : ?>
 					<form method="post" action="options.php">
 						<?php
@@ -344,6 +390,28 @@ class BD_BNB_Settings {
 			<?php esc_html_e( 'Show a fixed floating bell button (bottom-right corner)', 'buddy-notification-bell' ); ?>
 		</label>
 		<p class="description"><?php esc_html_e( 'Useful for block/FSE themes that do not use a traditional navigation menu.', 'buddy-notification-bell' ); ?></p>
+		<?php
+	}
+
+	public static function field_buddyboss_mode() {
+		$value = get_option( 'bnb_buddyboss_mode', '' );
+		?>
+		<label>
+			<input type="checkbox" name="bnb_buddyboss_mode" value="yes" <?php checked( 'yes', $value ); ?>>
+			<?php esc_html_e( 'When clicking the bell, open BuddyBoss\'s notification panel instead of the built-in dropdown', 'buddy-notification-bell' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'BuddyBoss notifications are not real-time. With this enabled, Buddy Notification Bell continues to detect new notifications in the background and plays the sound alert — but hands off the notification window to BuddyBoss.', 'buddy-notification-bell' ); ?>
+		</p>
+		<p class="description">
+			<?php
+			printf(
+				/* translators: %s: filter name */
+				esc_html__( 'Advanced: use the %s filter to override the BuddyBoss panel selector if you have customised the BuddyBoss template.', 'buddy-notification-bell' ),
+				'<code>bnb_buddyboss_notification_selector</code>'
+			);
+			?>
+		</p>
 		<?php
 	}
 

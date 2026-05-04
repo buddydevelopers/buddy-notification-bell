@@ -151,8 +151,9 @@ class BD_BNB_Manager {
 
 		foreach ( (array) $notifications as $notification ) {
 			$description = self::get_notification_description( $notification );
-			$text        = is_array( $description ) && isset( $description['text'] ) ? $description['text'] : (string) $description;
-			$href        = is_array( $description ) && isset( $description['link'] ) ? $description['link'] : $notify_url;
+			$extracted   = self::extract_description( $description, $notify_url );
+			$text        = $extracted['text'];
+			$href        = $extracted['href'];
 
 			if ( empty( trim( $text ) ) ) {
 				$text = __( 'You have a new notification', 'buddy-notification-bell' );
@@ -235,14 +236,12 @@ class BD_BNB_Manager {
 			$count        = $group['count'];
 
 			$description = self::get_notification_description( $notification, $count );
-			$text        = is_array( $description ) && isset( $description['text'] ) ? $description['text'] : (string) $description;
-			$href        = is_array( $description ) && isset( $description['link'] ) ? $description['link'] : $notify_url;
+			$extracted   = self::extract_description( $description, $notify_url );
+			$text        = $extracted['text'];
+			$href        = $extracted['href'];
 
 			if ( empty( trim( $text ) ) ) {
 				$text = __( 'You have a new notification', 'buddy-notification-bell' );
-			}
-			if ( empty( $href ) ) {
-				$href = $notify_url;
 			}
 
 			$time_diff = sprintf(
@@ -316,6 +315,48 @@ class BD_BNB_Manager {
 
 		/** This filter is documented in bp-notifications/bp-notifications-template.php */
 		return apply_filters( 'bp_get_the_notification_description', $description, $notification );
+	}
+
+	/**
+	 * Extracts text and a direct href from a BP notification description.
+	 *
+	 * BP components return descriptions in three formats:
+	 *   - array  ['text' => '...', 'link' => 'url']
+	 *   - object ->text / ->link
+	 *   - HTML string  '<a href="url">text</a>'  (legacy callbacks)
+	 *
+	 * @param mixed  $description
+	 * @param string $fallback_url Used when no direct link can be found.
+	 * @return array { text: string, href: string }
+	 */
+	private static function extract_description( $description, $fallback_url ) {
+		if ( is_array( $description ) ) {
+			return array(
+				'text' => isset( $description['text'] ) ? (string) $description['text'] : '',
+				'href' => ! empty( $description['link'] ) ? $description['link'] : $fallback_url,
+			);
+		}
+
+		if ( is_object( $description ) ) {
+			return array(
+				'text' => isset( $description->text ) ? (string) $description->text : '',
+				'href' => ! empty( $description->link ) ? $description->link : $fallback_url,
+			);
+		}
+
+		// HTML string — pull href out of the first anchor tag.
+		$href = $fallback_url;
+		if ( is_string( $description ) && false !== strpos( $description, 'href=' ) ) {
+			preg_match( '/href=["\']([^"\']+)["\']/', $description, $matches );
+			if ( ! empty( $matches[1] ) ) {
+				$href = html_entity_decode( $matches[1] );
+			}
+		}
+
+		return array(
+			'text' => wp_strip_all_tags( (string) $description ),
+			'href' => $href,
+		);
 	}
 
 	/**

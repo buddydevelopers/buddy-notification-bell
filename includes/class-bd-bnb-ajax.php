@@ -31,18 +31,31 @@ class BD_BNB_Ajax {
 			return $response;
 		}
 
-		$request         = $data['bnb-data'];
-		$last_id         = isset( $request['last_notified'] ) ? absint( $request['last_notified'] ) : 0;
-		$user_id         = bp_loggedin_user_id();
-		$notifications   = BD_BNB_Manager::get_new_notifications( $user_id, $last_id );
-		$formatted       = BD_BNB_Manager::format_notifications( $notifications );
-		$ids             = wp_list_pluck( $notifications, 'id' );
-		$ids[]           = $last_id;
-		$last_id         = ! empty( $ids ) ? max( $ids ) : $last_id;
+		$request       = $data['bnb-data'];
+		$last_id       = isset( $request['last_notified'] ) ? absint( $request['last_notified'] ) : 0;
+		$user_id       = bp_loggedin_user_id();
+
+		// Notifications — items newer than the last known ID.
+		$notifications = BD_BNB_Manager::get_new_notifications( $user_id, $last_id );
+		$formatted     = BD_BNB_Manager::format_notifications( $notifications );
+		$ids           = wp_list_pluck( $notifications, 'id' );
+		$ids[]         = $last_id;
+		$last_id       = ! empty( $ids ) ? max( $ids ) : $last_id;
+
+		// Always return the current unread notification count so the badge stays in sync.
+		$total_count = BD_BNB_Manager::get_unread_count( $user_id );
+
+		// Messages — JS handles "is new" detection; we just return the current count.
+		$message_count = -1;
+		if ( function_exists( 'messages_get_unread_count' ) && bp_is_active( 'messages' ) ) {
+			$message_count = (int) messages_get_unread_count( $user_id );
+		}
 
 		$response['bnb-data'] = array(
 			'messages'      => $formatted,
 			'last_notified' => $last_id,
+			'total_count'   => $total_count,
+			'message_count' => $message_count,
 		);
 
 		return $response;
@@ -80,9 +93,16 @@ class BD_BNB_Ajax {
 			wp_send_json_error();
 		}
 
-		wp_send_json_success( array(
-			'count' => BD_BNB_Manager::get_unread_count( bp_loggedin_user_id() ),
-		) );
+		$user_id  = bp_loggedin_user_id();
+		$response = array(
+			'count' => BD_BNB_Manager::get_unread_count( $user_id ),
+		);
+
+		if ( function_exists( 'messages_get_unread_count' ) && bp_is_active( 'messages' ) ) {
+			$response['message_count'] = (int) messages_get_unread_count( $user_id );
+		}
+
+		wp_send_json_success( $response );
 	}
 
 	/**

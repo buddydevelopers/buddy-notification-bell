@@ -53,15 +53,21 @@ class BD_BNB_Bell {
 			true
 		);
 
+		$buddyboss_active = defined( 'BP_PLATFORM_VERSION' );
+		$buddyboss_mode   = $buddyboss_active && 'yes' === get_option( 'bnb_buddyboss_mode', '' );
+
 		$js_data = apply_filters( 'bnb_get_js_settings', array(
-			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'nonce'        => wp_create_nonce( 'bnb_nonce' ),
-			'lastNotified' => BD_BNB_Manager::get_latest_notification_id(),
-			'soundUrl'     => BNB_URL . 'assets/sounds/Pling-bell.mp3',
-			'soundEnabled' => get_option( 'bnb_sound_enabled', 'yes' ),
-			'showCount'    => get_option( 'bnb_show_count', 'yes' ),
-			'pollInterval' => 30,
-			'i18n'         => array(
+			'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+			'nonce'             => wp_create_nonce( 'bnb_nonce' ),
+			'lastNotified'      => BD_BNB_Manager::get_latest_notification_id(),
+			'soundUrl'          => BNB_URL . 'assets/sounds/Pling-bell.mp3',
+			'soundEnabled'      => get_option( 'bnb_sound_enabled', 'yes' ),
+			'showCount'         => get_option( 'bnb_show_count', 'yes' ),
+			'pollInterval'      => 30,
+			'buddybossMode'           => $buddyboss_mode ? 'yes' : 'no',
+			'buddybossSelector'       => apply_filters( 'bnb_buddyboss_notification_selector', '#header-notifications-dropdown-elem > a' ),
+			'buddybossMessageSelector' => apply_filters( 'bnb_buddyboss_message_selector', '#header-messages-dropdown-elem .notification-link span:first' ),
+			'i18n'              => array(
 				'loading' => __( 'Loading...', 'buddy-notification-bell' ),
 				'dismiss' => __( 'Dismiss', 'buddy-notification-bell' ),
 			),
@@ -115,19 +121,14 @@ class BD_BNB_Bell {
 	}
 
 	/**
-	 * Renders floating bell via wp_footer when enabled in settings or on block themes.
+	 * Renders floating bell via wp_footer when the setting is explicitly enabled.
 	 */
 	public static function maybe_render_floating() {
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
-		$disable        = get_option( 'make_default_visible', '' );
-		$floating_on    = get_option( 'bnb_floating_bell', '' );
-		$is_block_theme = self::is_block_theme();
-
-		// Show floating bell if: explicitly enabled in settings, OR block theme with auto-inject not disabled.
-		if ( 'yes' !== $floating_on && ! ( $is_block_theme && 'yes' !== $disable ) ) {
+		if ( 'yes' !== get_option( 'bnb_floating_bell', '' ) ) {
 			return;
 		}
 
@@ -153,20 +154,22 @@ class BD_BNB_Bell {
 			return $override;
 		}
 
-		$count      = is_array( $notifications ) ? count( $notifications ) : 0;
-		$show_count = get_option( 'bnb_show_count', 'yes' );
-		$all_url    = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
-		$bell_icon  = apply_filters( 'buddy_bell_icon', self::get_default_icon() );
+		$count          = is_array( $notifications ) ? count( $notifications ) : 0;
+		$show_count     = get_option( 'bnb_show_count', 'yes' );
+		$all_url        = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
+		$bell_icon      = apply_filters( 'buddy_bell_icon', self::get_default_icon() );
+		$buddyboss_mode = defined( 'BP_PLATFORM_VERSION' ) && 'yes' === get_option( 'bnb_buddyboss_mode', '' );
 
 		$wrapper_class = implode( ' ', array(
 			'bnb-bell-wrapper',
 			'bnb-size-' . esc_attr( $size ),
 			'bnb-position-' . esc_attr( $position ),
+			$buddyboss_mode ? 'bnb-buddyboss-mode' : '',
 		) );
 
 		ob_start();
 		?>
-		<div class="<?php echo esc_attr( $wrapper_class ); ?>"
+		<div class="<?php echo esc_attr( trim( $wrapper_class ) ); ?>"
 		     role="navigation"
 		     aria-label="<?php esc_attr_e( 'Notifications', 'buddy-notification-bell' ); ?>">
 
@@ -175,7 +178,7 @@ class BD_BNB_Bell {
 				type="button"
 				aria-label="<?php esc_attr_e( 'Notifications', 'buddy-notification-bell' ); ?>"
 				aria-expanded="false"
-				aria-haspopup="true"
+				aria-haspopup="<?php echo $buddyboss_mode ? 'false' : 'true'; ?>"
 			>
 				<?php echo $bell_icon; // Filterable — intentionally not escaped. ?>
 				<?php if ( 'yes' === $show_count ) : ?>
@@ -185,6 +188,7 @@ class BD_BNB_Bell {
 				<?php endif; ?>
 			</button>
 
+			<?php if ( ! $buddyboss_mode ) : ?>
 			<div class="bnb-dropdown"
 			     role="dialog"
 			     aria-label="<?php esc_attr_e( 'Notifications panel', 'buddy-notification-bell' ); ?>"
@@ -212,6 +216,7 @@ class BD_BNB_Bell {
 				</div>
 
 			</div>
+			<?php endif; ?>
 
 		</div>
 		<?php
