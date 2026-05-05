@@ -158,9 +158,20 @@ class BD_BNB_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Not logged in.', 'buddy-notification-bell' ) ) );
 		}
 
-		if ( function_exists( 'bp_notifications_mark_all_for_user' ) ) {
-			bp_notifications_mark_all_for_user( bp_loggedin_user_id() );
+		$user_id = bp_loggedin_user_id();
+		if ( empty( $user_id ) ) {
+			wp_send_json_error();
 		}
+
+		global $wpdb;
+		$table = buddypress()->notifications->table_name;
+		$wpdb->update(
+			$table,
+			array( 'is_new' => 0 ),
+			array( 'user_id' => $user_id, 'is_new' => 1 ),
+			array( '%d' ),
+			array( '%d', '%d' )
+		);
 
 		wp_send_json_success();
 	}
