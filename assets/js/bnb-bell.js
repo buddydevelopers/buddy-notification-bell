@@ -6,9 +6,22 @@
 		return;
 	}
 
-	var lastNotified = parseInt( bnbData.lastNotified, 10 ) || 0;
-	var audio        = null;
-	var pollTimer    = null;
+	var lastNotified    = parseInt( bnbData.lastNotified, 10 ) || 0;
+	var lastMsgCount    = -1;    // -1 = baseline not yet established.
+	var msgBaselineSet  = false; // true after first heartbeat tick sets the baseline.
+	var lastKnownCount  = 0;     // tracks displayed notification count for tab-return check.
+	var audio           = null;
+	var audioUnlocked   = false; // Safari requires a user gesture before audio.play() works.
+	var pollTimer       = null;
+
+	// Tab alert state (title blink + favicon dot when tab is in background).
+	var originalTitle   = document.title;
+	var titleBlinkTimer = null;
+	var tabAlertCount   = 0;
+	var faviconEl       = document.querySelector( 'link[rel~="icon"]' );
+	var originalFavicon = faviconEl ? faviconEl.href : '';
+	// Orange dot favicon matching the plugin brand colour.
+	var alertFavicon    = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="%23f0640c" stroke="white" stroke-width="1.5"/></svg>';
 
 	/* ── Boot ───────────────────────────────────────────────────────────── */
 
@@ -16,6 +29,23 @@
 		if ( 'yes' === bnbData.soundEnabled ) {
 			audio = new Audio( bnbData.soundUrl );
 			audio.preload = 'auto';
+
+			// Safari blocks audio.play() until the user has interacted with the page.
+			// Play+pause silently on first click/touch to satisfy the gesture requirement.
+			function unlockAudio() {
+				if ( audioUnlocked || ! audio ) {
+					return;
+				}
+				audio.play().then( function () {
+					audio.pause();
+					audio.currentTime = 0;
+					audioUnlocked = true;
+					document.removeEventListener( 'click', unlockAudio );
+					document.removeEventListener( 'touchstart', unlockAudio );
+				} ).catch( function () {} );
+			}
+			document.addEventListener( 'click', unlockAudio );
+			document.addEventListener( 'touchstart', unlockAudio );
 		}
 
 		// Initial count fetch.
@@ -36,9 +66,18 @@
 	/* ── Events ─────────────────────────────────────────────────────────── */
 
 	function bindEvents() {
-		// Bell click: toggle dropdown, fetch notifications on open.
+		// Bell click: in BuddyBoss mode delegate to BB panel; otherwise toggle own dropdown.
 		$( document ).on( 'click', '.bnb-bell-button', function ( e ) {
 			e.stopPropagation();
+
+			if ( 'yes' === bnbData.buddybossMode ) {
+				var $bbBtn = $( bnbData.buddybossSelector );
+				if ( $bbBtn.length ) {
+					$bbBtn.trigger( 'click' );
+				}
+				return;
+			}
+
 			var $wrapper = $( this ).closest( '.bnb-bell-wrapper' );
 			var isOpen   = 'true' === $( this ).attr( 'aria-expanded' );
 
@@ -69,14 +108,13 @@
 			}
 		} );
 
-		// Notification item click: mark as read, then navigate.
+		// Notification item click: navigate only — do not mark as read.
+		// BP shows it in the Unread tab; user marks read explicitly via × or Mark all read.
 		$( document ).on( 'click', '.bnb-notification-item', function ( e ) {
 			if ( $( e.target ).closest( '.bnb-dismiss' ).length ) {
 				return; // Let dismiss handler handle it.
 			}
-			var id   = absInt( $( this ).data( 'id' ) );
 			var href = $( this ).data( 'href' );
-			dismissNotification( id, $( this ) );
 			if ( href ) {
 				window.location.href = href;
 			}
@@ -109,7 +147,7 @@
 			data['bnb-data'] = { last_notified: lastNotified };
 		} );
 
-		// Heartbeat: receive new notifications (real-time push).
+		// Heartbeat: receive counts and new notification items.
 		$( document ).on( 'heartbeat-tick', function ( e, data ) {
 			if ( ! data.hasOwnProperty( 'bnb-data' ) ) {
 				return;
@@ -117,26 +155,41 @@
 			var bnb      = data['bnb-data'];
 			lastNotified = parseInt( bnb.last_notified, 10 ) || lastNotified;
 
-			var messages = bnb.messages || [];
-			if ( ! messages.length ) {
-				return;
+			// Sync notification count badge on every tick (keeps badge in sync when
+			// BB marks notifications read via its own panel).
+			if ( typeof bnb.total_count !== 'undefined' ) {
+				updateCount( bnb.total_count );
 			}
 
-			// Fire backward-compat event.
-			$( document ).trigger( 'bnb:new_notifications', [ { count: messages.length, messages: messages } ] );
+			// Message count: JS owns "is new" detection to avoid the absint(-1) sentinel bug.
+			if ( bnb.message_count >= 0 ) {
+				updateBBMessageCount( bnb.message_count );
+				if ( msgBaselineSet && bnb.message_count > lastMsgCount ) {
+					ringBell();
+					playSound();
+					$( document ).trigger( 'bnb:new_messages', [ { count: bnb.message_count } ] );
+					startTabAlert( ( bnb.total_count || 0 ) + bnb.message_count );
+				}
+				lastMsgCount   = bnb.message_count;
+				msgBaselineSet = true;
+			}
 
-			ringBell();
-			playSound();
+			// New notification items.
+			var messages = bnb.messages || [];
+			if ( messages.length ) {
+				$( document ).trigger( 'bnb:new_notifications', [ { count: messages.length, messages: messages } ] );
 
-			// Get accurate count from server (avoids race with polling).
-			fetchCount();
+				ringBell();
+				playSound();
+				startTabAlert( ( bnb.total_count || 0 ) + Math.max( 0, bnb.message_count || 0 ) );
 
-			// If the dropdown is already open, refresh the list so the new item appears.
-			var $openWrapper = $( '.bnb-bell-wrapper' ).filter( function () {
-				return 'true' === $( this ).find( '.bnb-bell-button' ).attr( 'aria-expanded' );
-			} );
-			if ( $openWrapper.length ) {
-				fetchNotifications( $openWrapper );
+				// If the dropdown is already open, refresh the list so the new item appears.
+				var $openWrapper = $( '.bnb-bell-wrapper' ).filter( function () {
+					return 'true' === $( this ).find( '.bnb-bell-button' ).attr( 'aria-expanded' );
+				} );
+				if ( $openWrapper.length ) {
+					fetchNotifications( $openWrapper );
+				}
 			}
 		} );
 	}
@@ -252,6 +305,7 @@
 	/* ── Count badge ─────────────────────────────────────────────────────── */
 
 	function updateCount( count ) {
+		lastKnownCount = count;
 		if ( 'yes' !== bnbData.showCount ) {
 			return;
 		}
@@ -281,6 +335,102 @@
 		}
 		audio.currentTime = 0;
 		audio.play().catch( function () {} );
+	}
+
+	/* ── Tab visibility: catch up when user returns to this tab ─────────── */
+
+	document.addEventListener( 'visibilitychange', function () {
+		if ( ! document.hidden ) {
+			checkOnTabReturn();
+		}
+	} );
+
+	function checkOnTabReturn() {
+		// Restore title and favicon immediately — don't wait for AJAX.
+		stopTabAlert();
+
+		$.post( bnbData.ajaxUrl, {
+			action: 'bnb_get_count',
+			nonce:  bnbData.nonce,
+		}, function ( res ) {
+			if ( ! res.success ) {
+				return;
+			}
+
+			var newCount   = typeof res.data.count !== 'undefined' ? res.data.count : 0;
+			var shouldRing = false;
+
+			if ( newCount > lastKnownCount ) {
+				shouldRing = true;
+			}
+			updateCount( newCount );
+
+			// Check messages too if the server returned a message count.
+			if ( typeof res.data.message_count !== 'undefined' && res.data.message_count >= 0 ) {
+				var newMsgCount = res.data.message_count;
+				updateBBMessageCount( newMsgCount );
+				if ( msgBaselineSet && newMsgCount > lastMsgCount ) {
+					shouldRing = true;
+				}
+				lastMsgCount = newMsgCount;
+			}
+
+			if ( shouldRing ) {
+				ringBell();
+				playSound();
+			}
+		} );
+	}
+
+	function startTabAlert( count ) {
+		if ( ! document.hidden || count <= 0 ) {
+			return;
+		}
+		tabAlertCount   = count;
+		var alertTitle  = '(' + count + ') ' + originalTitle;
+		var toggle      = false;
+
+		// Switch favicon to orange dot.
+		if ( faviconEl ) {
+			faviconEl.href = alertFavicon;
+		}
+
+		// Blink title between count and original.
+		clearInterval( titleBlinkTimer );
+		document.title  = alertTitle;
+		titleBlinkTimer = setInterval( function () {
+			document.title = toggle ? originalTitle : alertTitle;
+			toggle         = ! toggle;
+		}, 1200 );
+	}
+
+	function stopTabAlert() {
+		clearInterval( titleBlinkTimer );
+		titleBlinkTimer = null;
+		document.title  = originalTitle;
+		tabAlertCount   = 0;
+		if ( faviconEl && originalFavicon ) {
+			faviconEl.href = originalFavicon;
+		}
+	}
+
+	/* ── BuddyBoss message count sync ───────────────────────────────────── */
+
+	function updateBBMessageCount( count ) {
+		var $wrap  = $( bnbData.buddybossMessageSelector );
+		if ( ! $wrap.length ) {
+			return;
+		}
+		var $badge = $wrap.find( '.count' );
+		if ( count > 0 ) {
+			if ( $badge.length ) {
+				$badge.text( count );
+			} else {
+				$wrap.append( $( '<span>' ).addClass( 'count' ).text( count ) );
+			}
+		} else {
+			$badge.remove();
+		}
 	}
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
