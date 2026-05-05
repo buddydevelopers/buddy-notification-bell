@@ -158,7 +158,9 @@ class BD_BNB_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Not logged in.', 'buddy-notification-bell' ) ) );
 		}
 
-		bp_notifications_mark_all_for_user( bp_loggedin_user_id() );
+		if ( function_exists( 'bp_notifications_mark_all_for_user' ) ) {
+			bp_notifications_mark_all_for_user( bp_loggedin_user_id() );
+		}
 
 		wp_send_json_success();
 	}

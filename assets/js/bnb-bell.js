@@ -130,14 +130,19 @@
 
 		// Mark all read.
 		$( document ).on( 'click', '.bnb-mark-all-read', function () {
-			var $wrapper = $( this ).closest( '.bnb-bell-wrapper' );
+			var $btn     = $( this );
+			var $wrapper = $btn.closest( '.bnb-bell-wrapper' );
+			$btn.prop( 'disabled', true );
 			$.post( bnbData.ajaxUrl, {
 				action: 'bnb_mark_all_read',
 				nonce:  bnbData.nonce,
 			}, function ( res ) {
+				$btn.prop( 'disabled', false );
 				if ( res.success ) {
-					$wrapper.find( '.bnb-notification-item' ).removeClass( 'bnb-unread' );
+					$wrapper.find( '.bnb-notification-list' ).empty();
+					$wrapper.find( '.bnb-empty' ).show();
 					updateCount( 0 );
+					setTimeout( function () { closeDropdown( $wrapper ); }, 400 );
 				}
 			} );
 		} );
