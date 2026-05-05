@@ -272,18 +272,24 @@ class BD_BNB_Manager {
 	 * @return string|array
 	 */
 	public static function get_notification_description( $notification, $count = 1 ) {
-		$bp = buddypress();
+		$bp          = buddypress();
+		$description = null;
 
 		if (
 			isset( $bp->{ $notification->component_name }->notification_callback ) &&
 			is_callable( $bp->{ $notification->component_name }->notification_callback )
 		) {
+			// Pass notification_id and screen so BuddyBoss callbacks can look up the notification object.
+			// Standard BP callbacks accept 4-5 args and PHP silently ignores the extras.
 			$description = call_user_func(
 				$bp->{ $notification->component_name }->notification_callback,
 				$notification->component_action,
 				$notification->item_id,
 				$notification->secondary_item_id,
-				$count
+				$count,
+				'string',
+				$notification->id,
+				'web'
 			);
 		} elseif (
 			isset( $bp->{ $notification->component_name }->format_notification_function ) &&
@@ -296,7 +302,15 @@ class BD_BNB_Manager {
 				$notification->secondary_item_id,
 				$count
 			);
-		} else {
+		}
+
+		// If the legacy callback returned nothing meaningful (BuddyBoss new-style action names such as
+		// bb_following_new hit the default case and return '<a href=""></a>' — non-empty string but
+		// no real text), fall back to the filter approach which BuddyBoss's BP_Core_Notification_Abstract
+		// hooks into with full support. For standard BuddyPress, callbacks return real content so this
+		// fallback is never reached.
+		$description_text = is_string( $description ) ? trim( wp_strip_all_tags( $description ) ) : '';
+		if ( empty( $description ) || ( is_string( $description ) && '' === $description_text ) ) {
 			/** This filter is documented in bp-notifications/bp-notifications-functions.php */
 			$description = apply_filters_ref_array(
 				'bp_notifications_get_notifications_for_user',
@@ -309,6 +323,7 @@ class BD_BNB_Manager {
 					$notification->component_action,
 					$notification->component_name,
 					$notification->id,
+					'web',
 				)
 			);
 		}
