@@ -162,7 +162,7 @@ class BD_BNB_Manager {
 			$time_diff = sprintf(
 				/* translators: %s: human-readable time difference */
 				__( '%s ago', 'buddy-notification-bell' ),
-				human_time_diff( strtotime( $notification->date_notified ), current_time( 'timestamp' ) )
+				human_time_diff( strtotime( $notification->date_notified ), time() )
 			);
 
 			// Best-effort avatar: secondary_item_id is often the acting user in BP.
@@ -247,7 +247,7 @@ class BD_BNB_Manager {
 			$time_diff = sprintf(
 				/* translators: %s: human-readable time difference */
 				__( '%s ago', 'buddy-notification-bell' ),
-				human_time_diff( strtotime( $notification->date_notified ), current_time( 'timestamp' ) )
+				human_time_diff( strtotime( $notification->date_notified ), time() )
 			);
 
 			$formatted[] = array(

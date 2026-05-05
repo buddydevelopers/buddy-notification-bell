@@ -63,6 +63,8 @@ class BD_BNB_Ajax {
 
 	/**
 	 * AJAX: return all unread notifications as a JSON array.
+	 *
+	 * @return void Sends JSON response.
 	 */
 	public static function get_notifications() {
 		check_ajax_referer( 'bnb_nonce', 'nonce' );
@@ -85,6 +87,8 @@ class BD_BNB_Ajax {
 
 	/**
 	 * AJAX: return the current unread count.
+	 *
+	 * @return void Sends JSON response.
 	 */
 	public static function get_count() {
 		check_ajax_referer( 'bnb_nonce', 'nonce' );
@@ -107,6 +111,8 @@ class BD_BNB_Ajax {
 
 	/**
 	 * AJAX: mark a single notification as read.
+	 *
+	 * @return void Sends JSON response.
 	 */
 	public static function dismiss_notification() {
 		check_ajax_referer( 'bnb_nonce', 'nonce' );
@@ -115,7 +121,7 @@ class BD_BNB_Ajax {
 			wp_send_json_error();
 		}
 
-		$notification_id = absint( $_POST['notification_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$notification_id = absint( $_POST['notification_id'] ?? 0 );
 		$user_id         = bp_loggedin_user_id();
 
 		if ( empty( $notification_id ) ) {
@@ -142,6 +148,8 @@ class BD_BNB_Ajax {
 
 	/**
 	 * AJAX: mark all notifications as read for the current user.
+	 *
+	 * @return void Sends JSON response.
 	 */
 	public static function mark_all_read() {
 		check_ajax_referer( 'bnb_nonce', 'nonce' );

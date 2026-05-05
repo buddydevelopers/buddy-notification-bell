@@ -115,7 +115,7 @@
 				return; // Let dismiss handler handle it.
 			}
 			var href = $( this ).data( 'href' );
-			if ( href ) {
+			if ( href && /^https?:\/\//i.test( href ) ) {
 				window.location.href = href;
 			}
 		} );
@@ -212,7 +212,7 @@
 		var $list  = $wrapper.find( '.bnb-notification-list' );
 		var $empty = $wrapper.find( '.bnb-empty' );
 
-		$list.html( '<div class="bnb-loading">' + bnbData.i18n.loading + '</div>' );
+		$list.empty().append( $( '<div>' ).addClass( 'bnb-loading' ).text( bnbData.i18n.loading ) );
 		$empty.hide();
 
 		$.post( bnbData.ajaxUrl, {
@@ -280,7 +280,7 @@
 			.attr( 'data-id', notif.id )
 			.attr( 'data-href', notif.href );
 
-		if ( notif.avatar_url ) {
+		if ( notif.avatar_url && /^https?:\/\//i.test( notif.avatar_url ) ) {
 			$item.append(
 				$( '<img>' ).addClass( 'bnb-avatar' ).attr( 'src', notif.avatar_url ).attr( 'alt', '' )
 			);

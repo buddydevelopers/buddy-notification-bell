@@ -113,7 +113,7 @@ class BD_BNB_Bell {
 		$disable  = get_option( 'make_default_visible', '' );
 		$location = apply_filters( 'buddy_theme_location', 'primary' );
 
-		if ( isset( $args->theme_location ) && $args->theme_location === $location && 'yes' !== $disable ) {
+		if ( isset( $args->theme_location ) && $location === $args->theme_location && 'yes' !== $disable ) {
 			$items .= '<li class="bnb-menu-item">' . self::render() . '</li>';
 		}
 
@@ -162,10 +162,18 @@ class BD_BNB_Bell {
 
 		$wrapper_class = implode( ' ', array(
 			'bnb-bell-wrapper',
-			'bnb-size-' . esc_attr( $size ),
-			'bnb-position-' . esc_attr( $position ),
+			'bnb-size-' . $size,
+			'bnb-position-' . $position,
 			$buddyboss_mode ? 'bnb-buddyboss-mode' : '',
 		) );
+
+		$allowed_icon_html = array(
+			'svg'    => array( 'class' => true, 'xmlns' => true, 'viewbox' => true, 'aria-hidden' => true, 'focusable' => true ),
+			'path'   => array( 'fill' => true, 'd' => true ),
+			'circle' => array( 'cx' => true, 'cy' => true, 'r' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true ),
+			'i'      => array( 'class' => true ),
+			'span'   => array( 'class' => true ),
+		);
 
 		ob_start();
 		?>
@@ -178,9 +186,9 @@ class BD_BNB_Bell {
 				type="button"
 				aria-label="<?php esc_attr_e( 'Notifications', 'buddy-notification-bell' ); ?>"
 				aria-expanded="false"
-				aria-haspopup="<?php echo $buddyboss_mode ? 'false' : 'true'; ?>"
+				aria-haspopup="<?php echo esc_attr( $buddyboss_mode ? 'false' : 'true' ); ?>"
 			>
-				<?php echo $bell_icon; // Filterable — intentionally not escaped. ?>
+				<?php echo wp_kses( $bell_icon, $allowed_icon_html ); ?>
 				<?php if ( 'yes' === $show_count ) : ?>
 				<span class="bnb-count"<?php echo ( $count > 0 ) ? '' : ' style="display:none;"'; ?>>
 					<?php echo esc_html( number_format_i18n( $count ) ); ?>

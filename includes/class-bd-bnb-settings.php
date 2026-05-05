@@ -20,6 +20,11 @@ class BD_BNB_Settings {
 		return defined( 'BP_PLATFORM_VERSION' );
 	}
 
+	/**
+	 * Registers all admin hooks.
+	 *
+	 * @return void
+	 */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -222,7 +227,12 @@ class BD_BNB_Settings {
 			return;
 		}
 
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$active_tab  = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$valid_tabs  = array( 'general', 'display', 'shortcode' );
+		if ( self::is_buddyboss_active() ) {
+			$valid_tabs[] = 'buddyboss';
+		}
+		$active_tab = in_array( $active_tab, $valid_tabs, true ) ? $active_tab : 'general';
 		?>
 		<div class="wrap bnb-settings-wrap">
 
@@ -238,20 +248,20 @@ class BD_BNB_Settings {
 
 			<nav class="nav-tab-wrapper bnb-nav-tabs">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=general' ) ); ?>"
-				   class="nav-tab <?php echo 'general' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				   class="nav-tab <?php echo esc_attr( 'general' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 					<?php esc_html_e( 'General', 'buddy-notification-bell' ); ?>
 				</a>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=display' ) ); ?>"
-				   class="nav-tab <?php echo 'display' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				   class="nav-tab <?php echo esc_attr( 'display' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 					<?php esc_html_e( 'Display', 'buddy-notification-bell' ); ?>
 				</a>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=shortcode' ) ); ?>"
-				   class="nav-tab <?php echo 'shortcode' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				   class="nav-tab <?php echo esc_attr( 'shortcode' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 					<?php esc_html_e( 'Shortcode', 'buddy-notification-bell' ); ?>
 				</a>
 				<?php if ( self::is_buddyboss_active() ) : ?>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=buddyboss' ) ); ?>"
-				   class="nav-tab <?php echo 'buddyboss' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				   class="nav-tab <?php echo esc_attr( 'buddyboss' === $active_tab ? 'nav-tab-active' : '' ); ?>">
 					<?php esc_html_e( 'BuddyBoss', 'buddy-notification-bell' ); ?>
 				</a>
 				<?php endif; ?>
@@ -323,6 +333,11 @@ class BD_BNB_Settings {
 	// Field renderers
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Renders the notification sound checkbox field.
+	 *
+	 * @return void
+	 */
 	public static function field_sound_enabled() {
 		$value = get_option( 'bnb_sound_enabled', 'yes' );
 		?>
@@ -333,6 +348,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the count badge checkbox field.
+	 *
+	 * @return void
+	 */
 	public static function field_show_count() {
 		$value = get_option( 'bnb_show_count', 'yes' );
 		?>
@@ -343,6 +363,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the bell position select field.
+	 *
+	 * @return void
+	 */
 	public static function field_bell_position() {
 		$value = get_option( 'bnb_bell_position', 'right' );
 		?>
@@ -354,6 +379,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the disable auto-bell checkbox field.
+	 *
+	 * @return void
+	 */
 	public static function field_disable_auto_bell() {
 		$value = get_option( 'make_default_visible', '' );
 		?>
@@ -365,6 +395,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the notification list style radio field.
+	 *
+	 * @return void
+	 */
 	public static function field_notification_style() {
 		$value = get_option( 'bnb_notification_style', 'individual' );
 		?>
@@ -382,6 +417,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the floating bell checkbox field.
+	 *
+	 * @return void
+	 */
 	public static function field_floating_bell() {
 		$value = get_option( 'bnb_floating_bell', '' );
 		?>
@@ -393,6 +433,11 @@ class BD_BNB_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders the BuddyBoss mode checkbox field.
+	 *
+	 * @return void
+	 */
 	public static function field_buddyboss_mode() {
 		$value = get_option( 'bnb_buddyboss_mode', '' );
 		?>
@@ -419,14 +464,32 @@ class BD_BNB_Settings {
 	// Sanitize callbacks
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Sanitizes a yes/no checkbox — returns 'yes' or empty string.
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
 	public static function sanitize_yes_no( $value ) {
 		return ( 'yes' === $value ) ? 'yes' : '';
 	}
 
+	/**
+	 * Sanitizes the notification style — returns 'individual' or 'grouped'.
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
 	public static function sanitize_notification_style( $value ) {
 		return in_array( $value, array( 'individual', 'grouped' ), true ) ? $value : 'individual';
 	}
 
+	/**
+	 * Sanitizes the bell position — returns 'right' or 'left'.
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
 	public static function sanitize_position( $value ) {
 		$allowed = array( 'right', 'left' );
 		return in_array( $value, $allowed, true ) ? $value : 'right';
