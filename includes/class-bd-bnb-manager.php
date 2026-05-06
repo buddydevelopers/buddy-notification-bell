@@ -24,21 +24,20 @@ class BD_BNB_Manager {
 
 		global $wpdb;
 
-		$table      = buddypress()->notifications->table_name;
-		$components = self::get_components_placeholders();
+		$table        = esc_sql( buddypress()->notifications->table_name );
+		$components   = self::get_components_placeholders();
+		$placeholders = $components['placeholders'];
 
-		if ( empty( $components['placeholders'] ) ) {
+		if ( empty( $placeholders ) ) {
 			return 0;
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$query = $wpdb->prepare(
-			"SELECT MAX(id) FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$components['placeholders']} ) AND is_new = %d",
-			array_merge( array( $user_id ), $components['values'], array( 1 ) )
+		return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				"SELECT MAX(id) FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$placeholders} ) AND is_new = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+				array_merge( array( $user_id ), $components['values'], array( 1 ) )
+			)
 		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return (int) $wpdb->get_var( $query );
 	}
 
 	/**
@@ -51,21 +50,20 @@ class BD_BNB_Manager {
 	public static function get_new_notifications( $user_id, $last_id ) {
 		global $wpdb;
 
-		$table      = buddypress()->notifications->table_name;
-		$components = self::get_components_placeholders();
+		$table        = esc_sql( buddypress()->notifications->table_name );
+		$components   = self::get_components_placeholders();
+		$placeholders = $components['placeholders'];
 
-		if ( empty( $components['placeholders'] ) ) {
+		if ( empty( $placeholders ) ) {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$query = $wpdb->prepare(
-			"SELECT * FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$components['placeholders']} ) AND id > %d AND is_new = %d",
-			array_merge( array( $user_id ), $components['values'], array( absint( $last_id ), 1 ) )
+		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				"SELECT * FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$placeholders} ) AND id > %d AND is_new = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+				array_merge( array( $user_id ), $components['values'], array( absint( $last_id ), 1 ) )
+			)
 		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return $wpdb->get_results( $query );
 	}
 
 	/**
@@ -81,21 +79,20 @@ class BD_BNB_Manager {
 
 		global $wpdb;
 
-		$table      = buddypress()->notifications->table_name;
-		$components = self::get_components_placeholders();
+		$table        = esc_sql( buddypress()->notifications->table_name );
+		$components   = self::get_components_placeholders();
+		$placeholders = $components['placeholders'];
 
-		if ( empty( $components['placeholders'] ) ) {
+		if ( empty( $placeholders ) ) {
 			return 0;
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$query = $wpdb->prepare(
-			"SELECT COUNT(*) FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$components['placeholders']} ) AND is_new = %d",
-			array_merge( array( $user_id ), $components['values'], array( 1 ) )
+		return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				"SELECT COUNT(*) FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$placeholders} ) AND is_new = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+				array_merge( array( $user_id ), $components['values'], array( 1 ) )
+			)
 		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return (int) $wpdb->get_var( $query );
 	}
 
 	/**
@@ -122,21 +119,20 @@ class BD_BNB_Manager {
 	private static function get_raw_unread_notifications( $user_id, $limit = 20 ) {
 		global $wpdb;
 
-		$table      = buddypress()->notifications->table_name;
-		$components = self::get_components_placeholders();
+		$table        = esc_sql( buddypress()->notifications->table_name );
+		$components   = self::get_components_placeholders();
+		$placeholders = $components['placeholders'];
 
-		if ( empty( $components['placeholders'] ) ) {
+		if ( empty( $placeholders ) ) {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$query = $wpdb->prepare(
-			"SELECT * FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$components['placeholders']} ) AND is_new = %d ORDER BY date_notified DESC LIMIT %d",
-			array_merge( array( $user_id ), $components['values'], array( 1, $limit ) )
+		return (array) $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				"SELECT * FROM `{$table}` WHERE user_id = %d AND component_name IN ( {$placeholders} ) AND is_new = %d ORDER BY date_notified DESC LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+				array_merge( array( $user_id ), $components['values'], array( 1, $limit ) )
+			)
 		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		return (array) $wpdb->get_results( $query );
 	}
 
 	/**
