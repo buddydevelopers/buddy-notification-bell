@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Buddy_Notification_Bell_PublicTest extends WP_UnitTestCase {
 
 	function test_get_instance(){

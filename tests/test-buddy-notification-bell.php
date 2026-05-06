@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class BNB_File_IncludeTest extends WP_UnitTestCase {
 
 	/**
