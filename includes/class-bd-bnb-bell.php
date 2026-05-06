@@ -56,7 +56,7 @@ class BD_BNB_Bell {
 		$buddyboss_active = defined( 'BP_PLATFORM_VERSION' );
 		$buddyboss_mode   = $buddyboss_active && 'yes' === get_option( 'bnb_buddyboss_mode', '' );
 
-		$js_data = apply_filters( 'bnb_get_js_settings', array(
+		$js_data = apply_filters( 'bd_bnb_get_js_settings', array(
 			'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
 			'nonce'             => wp_create_nonce( 'bnb_nonce' ),
 			'lastNotified'      => BD_BNB_Manager::get_latest_notification_id(),
@@ -65,8 +65,8 @@ class BD_BNB_Bell {
 			'showCount'         => get_option( 'bnb_show_count', 'yes' ),
 			'pollInterval'      => 30,
 			'buddybossMode'           => $buddyboss_mode ? 'yes' : 'no',
-			'buddybossSelector'       => apply_filters( 'bnb_buddyboss_notification_selector', '#header-notifications-dropdown-elem > a' ),
-			'buddybossMessageSelector' => apply_filters( 'bnb_buddyboss_message_selector', '#header-messages-dropdown-elem .notification-link span:first' ),
+			'buddybossSelector'       => apply_filters( 'bd_bnb_buddyboss_notification_selector', '#header-notifications-dropdown-elem > a' ),
+			'buddybossMessageSelector' => apply_filters( 'bd_bnb_buddyboss_message_selector', '#header-messages-dropdown-elem .notification-link span:first' ),
 			'i18n'              => array(
 				'loading' => __( 'Loading...', 'buddy-notification-bell' ),
 				'dismiss' => __( 'Dismiss', 'buddy-notification-bell' ),

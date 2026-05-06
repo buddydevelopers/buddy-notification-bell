@@ -132,6 +132,7 @@ class BD_BNB_Ajax {
 
 		// Verify the notification belongs to this user before updating.
 		$table = buddypress()->notifications->table_name;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update(
 			$table,
 			array( 'is_new' => 0 ),
@@ -165,6 +166,7 @@ class BD_BNB_Ajax {
 
 		global $wpdb;
 		$table = buddypress()->notifications->table_name;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update(
 			$table,
 			array( 'is_new' => 0 ),

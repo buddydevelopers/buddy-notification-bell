@@ -51,7 +51,7 @@ add_action( 'bp_include', 'bd_bnb_init' );
 /**
  * Show admin notice when BuddyPress is not active.
  */
-function bnb_admin_notice() {
+function bd_bnb_admin_notice() {
 	if ( ! function_exists( 'is_plugin_active' ) ) {
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 	}
@@ -62,7 +62,7 @@ function bnb_admin_notice() {
 			'</p></div>';
 	}
 }
-add_action( 'admin_notices', 'bnb_admin_notice' );
+add_action( 'admin_notices', 'bd_bnb_admin_notice' );
 
 /**
  * Add Settings and Hire Us links on the plugins list page.
@@ -74,10 +74,3 @@ function bd_bnb_plugin_action_links( $links ) {
 }
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'bd_bnb_plugin_action_links' );
 
-/**
- * Load plugin translations.
- */
-function bd_bnb_load_textdomain() {
-	load_plugin_textdomain( 'buddy-notification-bell', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-}
-add_action( 'init', 'bd_bnb_load_textdomain' );

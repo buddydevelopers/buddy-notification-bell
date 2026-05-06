@@ -3,13 +3,13 @@ Contributors: 1naveengiri, buddydevelopers, codex007
 Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
 Requires at least: WordPress 5.5
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A real-time BuddyPress & BuddyBoss notification bell with sound alerts, a LinkedIn-style dropdown, and a floating bell — place it anywhere with a shortcode.
+Real-time notification bell for BuddyPress & BuddyBoss with sound alerts, LinkedIn-style dropdown, and floating bell shortcode.
 
 == Description ==
 

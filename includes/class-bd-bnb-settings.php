@@ -242,7 +242,9 @@ class BD_BNB_Settings {
 				</svg>
 				<div class="bnb-settings-header-text">
 					<h1><?php esc_html_e( 'Buddy Notification Bell', 'buddy-notification-bell' ); ?></h1>
-					<p class="bnb-settings-version"><?php echo esc_html( sprintf( __( 'Version %s', 'buddy-notification-bell' ), BNB_VERSION ) ); ?></p>
+					<p class="bnb-settings-version"><?php
+					/* translators: %s: plugin version number */
+					echo esc_html( sprintf( __( 'Version %s', 'buddy-notification-bell' ), BNB_VERSION ) ); ?></p>
 				</div>
 			</div>
 
@@ -453,7 +455,7 @@ class BD_BNB_Settings {
 			printf(
 				/* translators: %s: filter name */
 				esc_html__( 'Advanced: use the %s filter to override the BuddyBoss panel selector if you have customised the BuddyBoss template.', 'buddy-notification-bell' ),
-				'<code>bnb_buddyboss_notification_selector</code>'
+				'<code>bd_bnb_buddyboss_notification_selector</code>'
 			);
 			?>
 		</p>
