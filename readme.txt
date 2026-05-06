@@ -1,21 +1,33 @@
 === Buddy Notification Bell ===
 Contributors: 1naveengiri, buddydevelopers, codex007
 Donate link: https://www.paypal.me/1naveengiri/500
-Tags: buddypress, buddypress notifications, notifications, notifications bell, facebook like notification
-Requires at least: WordPress 4.5
-Tested up to: WordPress 6.4.2
-Stable tag: 1.0.4
+Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
+Requires at least: WordPress 5.5
+Tested up to: 6.8
+Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Buddy Notification Bell convert BuddyPress notification to BuddyPress Bell Notification. It shows all notification with bell alert and anywhere you want just with one shortcode.
+A real-time BuddyPress & BuddyBoss notification bell with sound alerts, a LinkedIn-style dropdown, and a floating bell — place it anywhere with a shortcode.
 
 == Description ==
 
-Plugin shows all BuddyPress notification with Bell alert. You can place your Notifications Bell anywhere, just with a shortcode [buddy_notification_bell] to show notification bell.
-This bell not only show real-time notification but also it gives a notification bell sound alert. 
-Same like we get in facebook on new notification receive.
+Buddy Notification Bell adds a real-time notification bell to your BuddyPress or BuddyBoss site. New notifications are detected automatically using the WordPress Heartbeat API — no page reload needed.
+
+**Key features:**
+
+* Real-time detection of new notifications via WordPress Heartbeat API
+* Sound alert on new notification (enable/disable in settings)
+* LinkedIn-style dropdown panel with avatar, text, and time
+* Unread count badge on the bell icon
+* Floating bell button option (great for block/FSE themes)
+* Place the bell anywhere with the `[buddy_notification_bell]` shortcode
+* Auto-injects into the primary navigation menu (classic themes)
+* Mark all notifications as read with one click
+* Individual or grouped notification display style
+* Full BuddyBoss Platform compatibility — including an option to trigger BuddyBoss's own notification panel on bell click
+* Secure: all AJAX endpoints nonce-verified, all output properly escaped
 
 == Installation ==
 
@@ -31,19 +43,28 @@ This section describes how to install the plugin and get it working.
 
 == Frequently Asked Questions ==
 
-= Does This plugin works with bbPress =
-Yes, it works with bbPress but since it is a BuddyPress addon. You must have the BuddyPress notification module active. 
+= Does this plugin work with BuddyBoss Platform? =
+Yes. Full BuddyBoss Platform support is included. All BuddyBoss notification types (connections, follow, groups, messages, etc.) display correctly in the bell dropdown. You can also enable the "Use BuddyBoss Notification Panel" option so the bell triggers BuddyBoss's native panel instead of the built-in dropdown.
 
-= Where Do I Ask for support? =
-If you have any query related to the plugin you can email buddydevelopers@gmail.com or 1naveengiri@gmail.com.
+= Does this plugin work with bbPress? =
+Yes, it works with bbPress. You must have the BuddyPress Notifications module active.
 
-= How to change the bell icon? =
-You can use this snippet. 
+= Where do I ask for support? =
+Email buddydevelopers@gmail.com or 1naveengiri@gmail.com.
+
+= How do I change the bell icon? =
+Use this filter in your theme's functions.php:
 ```
-add_filter( 'buddy_bell_icon', function( $icon ){
-      return '<i class="fas fa-bell fa-2x"></i>';
-});
+add_filter( 'buddy_bell_icon', function( $icon ) {
+    return '<i class="fas fa-bell fa-2x"></i>';
+} );
 ```
+
+= How do I place the bell in a custom location? =
+Use the shortcode `[buddy_notification_bell]` on any page, widget, or template. You can also call it from PHP: `echo do_shortcode( '[buddy_notification_bell]' );`
+
+= Can I show a floating bell button? =
+Yes. Go to Notification → Display and enable "Show Floating Bell". It appears fixed at the bottom-right corner — useful for block/FSE themes.
 
 == Demo ==
 
@@ -57,31 +78,48 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 
 == Changelog ==
 
+= 2.0.0 =
+* Complete rewrite with modern BD_BNB_ architecture and LinkedIn-style bell UI
+* Real-time notifications via WordPress Heartbeat API
+* Sound alert on new notification (configurable)
+* LinkedIn-style dropdown with avatar, notification text, and relative time
+* Floating bell option for block/FSE themes
+* Individual and grouped notification display styles
+* Mark all read with one click
+* Full BuddyBoss Platform integration — all notification types (connections, follow, groups, etc.) display correctly
+* Option to use BuddyBoss's own notification panel on bell click
+* Background tab alerts and real-time unread count badge updates
+* Security hardening: nonce verification on all AJAX endpoints, sanitised input, escaped output
+* Suppressed third-party admin notices on the plugin settings page
+* Fixed mark-all-read using direct DB update for reliability
+* Fixed BuddyBoss new-style notification actions (bb_connections_new_request, bb_following_new, etc.) correctly resolving notification text
+
 = 1.0.4 =
-1. Add plugin translation files
-2. Fix style issues for bell notification container
+* Add plugin translation files
+* Fix style issues for bell notification container
 
 = 1.0.3 =
-1. Test plugin with latest wp and bp.
-2. Fix error for bbPress Notifications.
-3. update readme
+* Test plugin with latest WordPress and BuddyPress versions
+* Fix error for bbPress Notifications
+* Update readme
 
 = 1.0.2 =
-1. Tested with BuddyPress 5.1.2
-2. Hide Notification count when no new notification
-3. Set a default position of bell in primary menu on Plugin activation
-4. Update Plugin readme issues
+* Tested with BuddyPress 5.1.2
+* Hide notification count when no new notifications
+* Set a default position of bell in primary menu on plugin activation
+* Update plugin readme
 
 = 1.0.1 =
-1. Fix Fatal error when Notification Module is inactive
-2. Code Improvement removed some debugging code.
-3. Add Notice when BuddyPress is inactive
+* Fix fatal error when Notification Module is inactive
+* Code improvement — removed debugging code
+* Add notice when BuddyPress is inactive
 
 = 1.0.0 =
-1. Complete rewrite for better code and efficiency. 
-2. Uses WordPress heartbeat api instead of long polling via the ajax. 
-3. Allows theme authors to replace the inbuilt notification UI with notification bell . 
+* Initial release
+* Uses WordPress Heartbeat API instead of long polling via AJAX
+* Allows theme authors to replace the built-in notification UI via filter
 
+== Upgrade Notice ==
 
- == Upgrade Notice ==
-Buddy Notification Bell 1.0.2, Minor release. Tested with new WordPress and BuddyPress versions. Also includes few fixes and plugin readme improvement.
+= 2.0.0 =
+Major release — complete rewrite. Includes BuddyBoss Platform support, a new LinkedIn-style dropdown UI, floating bell option, grouped notifications, sound alerts, and significant security improvements. Recommended for all users.
