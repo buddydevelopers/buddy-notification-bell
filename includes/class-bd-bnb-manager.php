@@ -184,23 +184,43 @@ class BD_BNB_Manager {
 	 * @return string
 	 */
 	private static function get_notification_avatar( $notification ) {
-		$actor_id = ! empty( $notification->secondary_item_id ) ? (int) $notification->secondary_item_id : 0;
+		$bp_active = function_exists( 'bp_core_fetch_avatar' );
+		$actor_id  = ! empty( $notification->secondary_item_id ) ? (int) $notification->secondary_item_id : 0;
 
-		// Verify it's actually a user before using as avatar source.
+		// Try the acting user's avatar first (secondary_item_id is the actor in most BP components).
 		if ( $actor_id && get_userdata( $actor_id ) ) {
-			if ( function_exists( 'bp_core_fetch_avatar' ) ) {
-				return bp_core_fetch_avatar( array(
+			if ( $bp_active ) {
+				$url = bp_core_fetch_avatar( array(
 					'item_id' => $actor_id,
 					'object'  => 'user',
 					'type'    => 'thumb',
 					'html'    => false,
 				) );
+				if ( $url && is_string( $url ) ) {
+					return $url;
+				}
 			}
-			return get_avatar_url( $actor_id, array( 'size' => 48 ) );
+			$url = get_avatar_url( $actor_id, array( 'size' => 48 ) );
+			if ( $url ) {
+				return $url;
+			}
 		}
 
-		// Fall back to the notification recipient's avatar.
-		return get_avatar_url( (int) $notification->user_id, array( 'size' => 48 ) );
+		// Fall back to the notification recipient's avatar via BP, then gravatar.
+		$recipient_id = (int) $notification->user_id;
+		if ( $bp_active ) {
+			$url = bp_core_fetch_avatar( array(
+				'item_id' => $recipient_id,
+				'object'  => 'user',
+				'type'    => 'thumb',
+				'html'    => false,
+			) );
+			if ( $url && is_string( $url ) ) {
+				return $url;
+			}
+		}
+
+		return (string) get_avatar_url( $recipient_id, array( 'size' => 48 ) );
 	}
 
 	/**

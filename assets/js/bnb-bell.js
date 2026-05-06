@@ -285,7 +285,7 @@
 			.attr( 'data-id', notif.id )
 			.attr( 'data-href', notif.href );
 
-		if ( notif.avatar_url && /^https?:\/\//i.test( notif.avatar_url ) ) {
+		if ( notif.avatar_url && typeof notif.avatar_url === 'string' ) {
 			$item.append(
 				$( '<img>' ).addClass( 'bnb-avatar' ).attr( 'src', notif.avatar_url ).attr( 'alt', '' )
 			);
@@ -321,6 +321,11 @@
 				$( this ).hide();
 			}
 		} );
+
+		// In BuddyBoss mode, also sync the native header bell badge.
+		if ( 'yes' === bnbData.buddybossMode ) {
+			updateBBNotificationCount( count );
+		}
 	}
 
 	/* ── Bell ring animation ─────────────────────────────────────────────── */
@@ -416,6 +421,25 @@
 		tabAlertCount   = 0;
 		if ( faviconEl && originalFavicon ) {
 			faviconEl.href = originalFavicon;
+		}
+	}
+
+	/* ── BuddyBoss notification bell count sync ─────────────────────────── */
+
+	function updateBBNotificationCount( count ) {
+		var $link = $( bnbData.buddybossSelector );
+		if ( ! $link.length ) {
+			return;
+		}
+		var $badge = $link.find( '.count' );
+		if ( count > 0 ) {
+			if ( $badge.length ) {
+				$badge.text( count );
+			} else {
+				$link.append( $( '<span>' ).addClass( 'count' ).text( count ) );
+			}
+		} else {
+			$badge.remove();
 		}
 	}
 
