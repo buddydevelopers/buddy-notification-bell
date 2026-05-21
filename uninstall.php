@@ -16,3 +16,5 @@ delete_option( 'bnb_bell_position' );
 delete_option( 'bnb_show_count' );
 delete_option( 'bnb_floating_bell' );
 delete_option( 'bnb_notification_style' );
+
+delete_metadata( 'user', 0, 'bnb_platform_notice_dismissed', '', true );

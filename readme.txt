@@ -3,8 +3,8 @@ Contributors: 1naveengiri, buddydevelopers, codex007
 Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
 Requires at least: WordPress 5.5
-Tested up to: 6.9
-Stable tag: 2.0.1
+Tested up to: 7.0
+Stable tag: 2.0.2
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -70,6 +70,8 @@ Yes. Go to Notification → Display and enable "Show Floating Bell". It appears 
 
 https://www.youtube.com/watch?v=seMBJZB-vu8
 
+https://www.youtube.com/watch?v=d0viMMI5LMU
+
 == Screenshots ==
 
 1. Notification Bell with Notification Drop down by BuddyDeveloper[http://buddydevelopers.com]
@@ -77,6 +79,14 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 3. setting to enable disable notification bell in primary menu.
 
 == Changelog ==
+
+= 2.0.2 =
+* Fixed: dependency notice now correctly recognises BuddyBoss Platform as a valid community platform (previously only checked for BuddyPress)
+* Improved: notice is now an informational blue banner instead of a warning, and is persistently dismissible per user via a "Don't show again" link
+* Tested up to WordPress 7.0
+
+= 2.0.1 =
+* Add user avatar on the notification
 
 = 2.0.0 =
 * Complete rewrite with modern BD_BNB_ architecture and LinkedIn-style bell UI
@@ -120,6 +130,12 @@ https://www.youtube.com/watch?v=seMBJZB-vu8
 * Allows theme authors to replace the built-in notification UI via filter
 
 == Upgrade Notice ==
+
+= 2.0.2 =
+Fixes the dependency notice to correctly detect BuddyBoss Platform. Safe upgrade for all 2.0.x users.
+
+= 2.0.1 =
+Adds user avatars to the notification dropdown. Safe upgrade for all 2.0.0 users.
 
 = 2.0.0 =
 Major release — complete rewrite. Includes BuddyBoss Platform support, a new LinkedIn-style dropdown UI, floating bell option, grouped notifications, sound alerts, and significant security improvements. Recommended for all users.
