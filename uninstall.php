@@ -12,6 +12,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 delete_option( 'make_default_visible' );
 delete_option( 'bnb_sound_enabled' );
+delete_option( 'bnb_sound_url' );
+delete_option( 'bnb_sound_preset' );
 delete_option( 'bnb_bell_position' );
 delete_option( 'bnb_show_count' );
 delete_option( 'bnb_floating_bell' );

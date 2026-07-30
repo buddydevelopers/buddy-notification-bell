@@ -11,13 +11,12 @@
 	var msgBaselineSet  = false; // true after first heartbeat tick sets the baseline.
 	var lastKnownCount  = 0;     // tracks displayed notification count for tab-return check.
 	var audio           = null;
+	var soundContext    = null;
 	var audioUnlocked   = false; // Safari requires a user gesture before audio.play() works.
-	var pollTimer       = null;
 
 	// Tab alert state (title blink + favicon dot when tab is in background).
 	var originalTitle   = document.title;
 	var titleBlinkTimer = null;
-	var tabAlertCount   = 0;
 	var faviconEl       = document.querySelector( 'link[rel~="icon"]' );
 	var originalFavicon = faviconEl ? faviconEl.href : '';
 	// Orange dot favicon matching the plugin brand colour.
@@ -36,6 +35,12 @@
 				if ( audioUnlocked || ! audio ) {
 					return;
 				}
+				if ( isGeneratedPreset( bnbData.soundPreset ) ) {
+					var context = getSoundContext();
+					if ( context ) {
+						context.resume().catch( function () {} );
+					}
+				}
 				audio.play().then( function () {
 					audio.pause();
 					audio.currentTime = 0;
@@ -53,7 +58,7 @@
 
 		// Poll every N seconds for updated count.
 		var interval = parseInt( bnbData.pollInterval, 10 ) || 30;
-		pollTimer = setInterval( fetchCount, interval * 1000 );
+		setInterval( fetchCount, interval * 1000 );
 
 		// Keep WP Heartbeat running for real-time push.
 		if ( typeof wp !== 'undefined' && wp.heartbeat ) {
@@ -159,6 +164,7 @@
 			}
 			var bnb      = data['bnb-data'];
 			lastNotified = parseInt( bnb.last_notified, 10 ) || lastNotified;
+			syncSoundSettings( bnb.sound );
 
 			// Sync notification count badge on every tick (keeps badge in sync when
 			// BB marks notifications read via its own panel).
@@ -248,6 +254,7 @@
 			nonce:  bnbData.nonce,
 		}, function ( res ) {
 			if ( res.success && typeof res.data.count !== 'undefined' ) {
+				syncSoundSettings( res.data.sound );
 				updateCount( res.data.count );
 			}
 		} );
@@ -339,12 +346,109 @@
 
 	/* ── Sound ───────────────────────────────────────────────────────────── */
 
+	/**
+	 * Apply fresh sound settings returned by AJAX or Heartbeat.
+	 *
+	 * @param {Object} settings Current server-side sound settings.
+	 */
+	function syncSoundSettings( settings ) {
+		if ( ! settings ) {
+			return;
+		}
+
+		var nextUrl = settings.url || bnbData.soundUrl;
+		if ( nextUrl !== bnbData.soundUrl || ! audio ) {
+			bnbData.soundUrl = nextUrl;
+
+			if ( audio ) {
+				audio.pause();
+				audio.src = nextUrl;
+				audio.load();
+			} else {
+				audio = new Audio( nextUrl );
+				audio.preload = 'auto';
+			}
+		}
+
+		bnbData.soundPreset = settings.preset || 'default';
+		bnbData.soundEnabled = settings.enabled || '';
+	}
+
 	function playSound() {
 		if ( 'yes' !== bnbData.soundEnabled || ! audio ) {
 			return;
 		}
+		if ( isGeneratedPreset( bnbData.soundPreset ) && playPreset( bnbData.soundPreset ) ) {
+			return;
+		}
 		audio.currentTime = 0;
 		audio.play().catch( function () {} );
+	}
+
+	/**
+	 * Return whether a sound is one of the generated library presets.
+	 *
+	 * @param {string} preset Preset key.
+	 * @return {boolean}
+	 */
+	function isGeneratedPreset( preset ) {
+		return [ 'chime', 'pop', 'sparkle', 'soft' ].indexOf( preset ) !== -1;
+	}
+
+	/**
+	 * Get the shared Web Audio context.
+	 *
+	 * @return {AudioContext|null}
+	 */
+	function getSoundContext() {
+		var AudioContext = window.AudioContext || window.webkitAudioContext;
+		if ( ! AudioContext ) {
+			return null;
+		}
+		soundContext = soundContext || new AudioContext();
+		return soundContext;
+	}
+
+	/**
+	 * Play a generated sound from the built-in library.
+	 *
+	 * @param {string} preset Preset key.
+	 * @return {boolean} Whether the preset could be handled.
+	 */
+	function playPreset( preset ) {
+		var patterns = {
+			chime:   { notes: [ 523.25, 659.25, 783.99 ], duration: 0.14, type: 'sine' },
+			pop:     { notes: [ 740, 370 ], duration: 0.09, type: 'sine' },
+			sparkle: { notes: [ 880, 1174.66, 1567.98 ], duration: 0.1, type: 'triangle' },
+			soft:    { notes: [ 440, 554.37 ], duration: 0.22, type: 'sine' }
+		};
+		var pattern = patterns[ preset ];
+		var context = getSoundContext();
+
+		if ( ! context || ! pattern ) {
+			return false;
+		}
+
+		context.resume().then( function () {
+			pattern.notes.forEach( function ( frequency, index ) {
+				var start = context.currentTime + ( index * pattern.duration );
+				var end = start + pattern.duration + 0.08;
+				var oscillator = context.createOscillator();
+				var gain = context.createGain();
+
+				oscillator.type = pattern.type;
+				oscillator.frequency.setValueAtTime( frequency, start );
+				gain.gain.setValueAtTime( 0.0001, start );
+				gain.gain.exponentialRampToValueAtTime( 0.16, start + 0.015 );
+				gain.gain.exponentialRampToValueAtTime( 0.0001, end );
+				oscillator.connect( gain );
+				gain.connect( context.destination );
+				oscillator.start( start );
+				oscillator.stop( end );
+			} );
+		} ).catch( function () {} );
+
+		return true;
 	}
 
 	/* ── Tab visibility: catch up when user returns to this tab ─────────── */
@@ -366,6 +470,8 @@
 			if ( ! res.success ) {
 				return;
 			}
+
+			syncSoundSettings( res.data.sound );
 
 			var newCount   = typeof res.data.count !== 'undefined' ? res.data.count : 0;
 			var shouldRing = false;
@@ -396,7 +502,6 @@
 		if ( ! document.hidden || count <= 0 ) {
 			return;
 		}
-		tabAlertCount   = count;
 		var alertTitle  = '(' + count + ') ' + originalTitle;
 		var toggle      = false;
 
@@ -418,7 +523,6 @@
 		clearInterval( titleBlinkTimer );
 		titleBlinkTimer = null;
 		document.title  = originalTitle;
-		tabAlertCount   = 0;
 		if ( faviconEl && originalFavicon ) {
 			faviconEl.href = originalFavicon;
 		}

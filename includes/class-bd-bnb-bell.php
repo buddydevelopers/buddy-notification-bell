@@ -55,12 +55,15 @@ class BD_BNB_Bell {
 
 		$buddyboss_active = defined( 'BP_PLATFORM_VERSION' );
 		$buddyboss_mode   = $buddyboss_active && 'yes' === get_option( 'bnb_buddyboss_mode', '' );
+		$sound_url        = get_option( 'bnb_sound_url', '' );
+		$sound_url        = $sound_url ? $sound_url : BNB_URL . 'assets/sounds/Pling-bell.mp3';
 
 		$js_data = apply_filters( 'bd_bnb_get_js_settings', array(
 			'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
 			'nonce'             => wp_create_nonce( 'bnb_nonce' ),
 			'lastNotified'      => BD_BNB_Manager::get_latest_notification_id(),
-			'soundUrl'          => BNB_URL . 'assets/sounds/Pling-bell.mp3',
+			'soundUrl'          => esc_url_raw( $sound_url ),
+			'soundPreset'       => get_option( 'bnb_sound_preset', 'default' ),
 			'soundEnabled'      => get_option( 'bnb_sound_enabled', 'yes' ),
 			'showCount'         => get_option( 'bnb_show_count', 'yes' ),
 			'pollInterval'      => 30,
