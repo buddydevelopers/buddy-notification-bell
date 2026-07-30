@@ -56,6 +56,7 @@ class BD_BNB_Ajax {
 			'last_notified' => $last_id,
 			'total_count'   => $total_count,
 			'message_count' => $message_count,
+			'sound'         => self::get_sound_settings(),
 		);
 
 		return $response;
@@ -100,6 +101,7 @@ class BD_BNB_Ajax {
 		$user_id  = bp_loggedin_user_id();
 		$response = array(
 			'count' => BD_BNB_Manager::get_unread_count( $user_id ),
+			'sound' => self::get_sound_settings(),
 		);
 
 		if ( function_exists( 'messages_get_unread_count' ) && bp_is_active( 'messages' ) ) {
@@ -107,6 +109,31 @@ class BD_BNB_Ajax {
 		}
 
 		wp_send_json_success( $response );
+	}
+
+	/**
+	 * Returns the current sound settings for open frontend pages.
+	 *
+	 * @return array
+	 */
+	private static function get_sound_settings() {
+		$url     = get_option( 'bnb_sound_url', '' );
+		$preset  = get_option( 'bnb_sound_preset', 'default' );
+		$allowed = array( 'default', 'chime', 'pop', 'sparkle', 'soft', 'custom' );
+
+		if ( ! in_array( $preset, $allowed, true ) ) {
+			$preset = 'default';
+		}
+
+		if ( empty( $url ) ) {
+			$url = BNB_URL . 'assets/sounds/Pling-bell.mp3';
+		}
+
+		return array(
+			'url'     => esc_url_raw( $url ),
+			'preset'  => $preset,
+			'enabled' => get_option( 'bnb_sound_enabled', 'yes' ),
+		);
 	}
 
 	/**

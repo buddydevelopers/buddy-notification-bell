@@ -17,6 +17,8 @@ class BD_BNB_Install {
 	public static function activate() {
 		$defaults = array(
 			'bnb_sound_enabled'      => 'yes',
+			'bnb_sound_url'          => '',
+			'bnb_sound_preset'       => 'default',
 			'bnb_bell_position'      => 'right',
 			'bnb_show_count'         => 'yes',
 			'bnb_floating_bell'      => '',

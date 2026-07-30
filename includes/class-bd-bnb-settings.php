@@ -95,6 +95,22 @@ class BD_BNB_Settings {
 			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
 			'default'           => 'yes',
 		) );
+		register_setting(
+			'bnb_general',
+			'bnb_sound_url',
+			array(
+				'sanitize_callback' => 'esc_url_raw',
+				'default'           => '',
+			)
+		);
+		register_setting(
+			'bnb_general',
+			'bnb_sound_preset',
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_sound_preset' ),
+				'default'           => 'default',
+			)
+		);
 		register_setting( 'bnb_general', 'bnb_show_count', array(
 			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
 			'default'           => 'yes',
@@ -112,6 +128,13 @@ class BD_BNB_Settings {
 			'bnb_sound_enabled',
 			__( 'Notification Sound', 'buddy-notification-bell' ),
 			array( __CLASS__, 'field_sound_enabled' ),
+			'bnb_general',
+			'bnb_general'
+		);
+		add_settings_field(
+			'bnb_sound_url',
+			__( 'Sound Library', 'buddy-notification-bell' ),
+			array( __CLASS__, 'field_sound_url' ),
 			'bnb_general',
 			'bnb_general'
 		);
@@ -210,12 +233,24 @@ class BD_BNB_Settings {
 			BNB_VERSION
 		);
 
+		wp_enqueue_media();
+
 		wp_enqueue_script(
 			'bnb-admin',
 			BNB_URL . 'assets/js/bnb-admin.js',
 			array( 'jquery' ),
 			BNB_VERSION,
 			true
+		);
+
+		wp_localize_script(
+			'bnb-admin',
+			'bnbAdminData',
+			array(
+				'chooseSound' => __( 'Choose Notification Sound', 'buddy-notification-bell' ),
+				'useSound'    => __( 'Use This Sound', 'buddy-notification-bell' ),
+				'copied'      => __( 'Copied!', 'buddy-notification-bell' ),
+			)
 		);
 	}
 
@@ -347,6 +382,71 @@ class BD_BNB_Settings {
 			<input type="checkbox" name="bnb_sound_enabled" value="yes" <?php checked( 'yes', $value ); ?>>
 			<?php esc_html_e( 'Play a sound alert when a new notification arrives', 'buddy-notification-bell' ); ?>
 		</label>
+		<?php
+	}
+
+	/**
+	 * Renders the notification sound media selector.
+	 *
+	 * @return void
+	 */
+	public static function field_sound_url() {
+		$value       = get_option( 'bnb_sound_url', '' );
+		$preset      = get_option( 'bnb_sound_preset', 'default' );
+		$default_url = BNB_URL . 'assets/sounds/Pling-bell.mp3';
+		$preview_url = $value ? $value : $default_url;
+		?>
+		<div class="bnb-sound-picker">
+			<div class="bnb-sound-library">
+				<?php
+				$sounds = array(
+					'default' => __( 'Classic Bell', 'buddy-notification-bell' ),
+					'chime'   => __( 'Chime', 'buddy-notification-bell' ),
+					'pop'     => __( 'Pop', 'buddy-notification-bell' ),
+					'sparkle' => __( 'Sparkle', 'buddy-notification-bell' ),
+					'soft'    => __( 'Soft Bell', 'buddy-notification-bell' ),
+					'custom'  => __( 'Custom Audio', 'buddy-notification-bell' ),
+				);
+				foreach ( $sounds as $sound_key => $sound_label ) :
+					?>
+					<div class="bnb-sound-option">
+						<label>
+							<input type="radio" name="bnb_sound_preset" value="<?php echo esc_attr( $sound_key ); ?>" <?php checked( $sound_key, $preset ); ?>>
+							<span><?php echo esc_html( $sound_label ); ?></span>
+						</label>
+						<button type="button" class="button-link bnb-preview-preset" data-preset="<?php echo esc_attr( $sound_key ); ?>">
+							<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
+							<span class="screen-reader-text"><?php
+							/* translators: %s: notification sound name. */
+							echo esc_html( sprintf( __( 'Preview %s', 'buddy-notification-bell' ), $sound_label ) );
+							?></span>
+						</button>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<div class="bnb-custom-sound"<?php echo ( 'custom' === $preset ) ? '' : ' hidden'; ?>>
+				<input
+					type="url"
+					id="bnb_sound_url"
+					name="bnb_sound_url"
+					value="<?php echo esc_attr( $value ); ?>"
+					placeholder="<?php echo esc_attr( $default_url ); ?>"
+				>
+				<button type="button" class="button bnb-select-sound">
+					<?php esc_html_e( 'Choose Audio', 'buddy-notification-bell' ); ?>
+				</button>
+				<button type="button" class="button-link-delete bnb-reset-sound"<?php echo $value ? '' : ' hidden'; ?>>
+					<?php esc_html_e( 'Clear', 'buddy-notification-bell' ); ?>
+				</button>
+			</div>
+			<audio
+				class="bnb-sound-preview"
+				preload="none"
+				src="<?php echo esc_url( $preview_url ); ?>"
+				data-default-url="<?php echo esc_url( $default_url ); ?>"
+			></audio>
+		</div>
+		<p class="description"><?php esc_html_e( 'Preview a built-in sound, or select Custom Audio to choose a file from the Media Library.', 'buddy-notification-bell' ); ?></p>
 		<?php
 	}
 
@@ -484,6 +584,17 @@ class BD_BNB_Settings {
 	 */
 	public static function sanitize_notification_style( $value ) {
 		return in_array( $value, array( 'individual', 'grouped' ), true ) ? $value : 'individual';
+	}
+
+	/**
+	 * Sanitizes the selected notification sound preset.
+	 *
+	 * @param mixed $value Sound preset key.
+	 * @return string
+	 */
+	public static function sanitize_sound_preset( $value ) {
+		$allowed = array( 'default', 'chime', 'pop', 'sparkle', 'soft', 'custom' );
+		return in_array( $value, $allowed, true ) ? $value : 'default';
 	}
 
 	/**

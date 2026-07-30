@@ -204,6 +204,98 @@
 	outline:      none;
 }
 
+/* ── Notification sound picker ───────────────────────────────────────────── */
+
+.bnb-sound-picker {
+	display:     block;
+}
+
+.bnb-sound-library {
+	display:               grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap:                   10px;
+	max-width:             720px;
+}
+
+.bnb-settings-body .bnb-sound-option {
+	display:       grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap:         8px;
+	margin:      0;
+	padding:     11px 12px;
+	border:      1px solid var(--bnb-border);
+	border-radius: 6px;
+	background:  #fff;
+	transition:  border-color 0.15s, background 0.15s;
+}
+
+.bnb-settings-body .bnb-sound-option label {
+	align-items: center;
+}
+
+.bnb-settings-body .bnb-sound-option:hover {
+	border-color: var(--bnb-orange);
+	background:   var(--bnb-orange-light);
+}
+
+.bnb-settings-body .bnb-sound-option:has(input:checked) {
+	border-color: var(--bnb-orange);
+	box-shadow:   0 0 0 1px var(--bnb-orange);
+	background:   var(--bnb-orange-light);
+}
+
+.bnb-preview-preset {
+	display:         inline-flex !important;
+	align-items:     center;
+	justify-content: center;
+	text-decoration: none !important;
+	color:           var(--bnb-orange) !important;
+}
+
+.bnb-preview-preset .dashicons {
+	width:     18px;
+	height:    18px;
+	font-size: 18px;
+}
+
+.bnb-custom-sound {
+	display:     flex;
+	align-items: center;
+	flex-wrap:   wrap;
+	gap:         8px;
+	margin-top:  12px;
+	padding:     12px;
+	border:      1px solid var(--bnb-orange-border);
+	border-radius: 6px;
+	background:  var(--bnb-orange-light);
+}
+
+.bnb-custom-sound[hidden] {
+	display: none;
+}
+
+.bnb-custom-sound input[type="url"] {
+	width:         min(420px, 100%);
+	min-height:    34px;
+	border-color:  var(--bnb-border);
+	border-radius: 4px;
+}
+
+.bnb-custom-sound input[type="url"]:focus {
+	border-color: var(--bnb-orange);
+	box-shadow:   0 0 0 1px var(--bnb-orange);
+	outline:      none;
+}
+
+.bnb-custom-sound .button {
+	min-height: 34px;
+}
+
+.bnb-custom-sound .button-link-delete {
+	min-height: 34px;
+}
+
 /* ── Submit button ───────────────────────────────────────────────────────── */
 
 .bnb-settings-body .submit {

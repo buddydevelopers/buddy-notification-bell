@@ -4,7 +4,7 @@ Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
 Requires at least: WordPress 5.5
 Tested up to: 7.0
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,8 @@ Buddy Notification Bell adds a real-time notification bell to your BuddyPress or
 **Key features:**
 
 * Real-time detection of new notifications via WordPress Heartbeat API
-* Sound alert on new notification (enable/disable in settings)
+* Customisable notification sounds with built-in presets, live previews, and Media Library audio
+* Sound changes apply to open pages automatically — no frontend refresh required
 * LinkedIn-style dropdown panel with avatar, text, and time
 * Unread count badge on the bell icon
 * Floating bell button option (great for block/FSE themes)
@@ -66,6 +67,9 @@ Use the shortcode `[buddy_notification_bell]` on any page, widget, or template. 
 = Can I show a floating bell button? =
 Yes. Go to Notification → Display and enable "Show Floating Bell". It appears fixed at the bottom-right corner — useful for block/FSE themes.
 
+= How do I change the notification sound? =
+Go to Notification → General and choose Classic Bell, Chime, Pop, Sparkle, or Soft Bell from the Sound Library. Use the play button to preview a sound, or select Custom Audio to choose an audio file from the WordPress Media Library. Click "Save Changes" to apply your selection. Open frontend pages automatically receive the latest sound setting, so they do not need to be refreshed.
+
 == Demo ==
 
 https://www.youtube.com/watch?v=seMBJZB-vu8
@@ -79,6 +83,12 @@ https://www.youtube.com/watch?v=d0viMMI5LMU
 3. setting to enable disable notification bell in primary menu.
 
 == Changelog ==
+
+= 2.0.3 =
+* Added: built-in notification sound library with Classic Bell, Chime, Pop, Sparkle, and Soft Bell presets
+* Added: preview controls for every notification sound
+* Added: custom notification sounds from the WordPress Media Library
+* Improved: sound changes are synchronised to open frontend pages without requiring a refresh
 
 = 2.0.2 =
 * Fixed: dependency notice now correctly recognises BuddyBoss Platform as a valid community platform (previously only checked for BuddyPress)
@@ -130,6 +140,9 @@ https://www.youtube.com/watch?v=d0viMMI5LMU
 * Allows theme authors to replace the built-in notification UI via filter
 
 == Upgrade Notice ==
+
+= 2.0.3 =
+Adds a notification sound library, custom Media Library audio, sound previews, and live sound-setting updates for open pages.
 
 = 2.0.2 =
 Fixes the dependency notice to correctly detect BuddyBoss Platform. Safe upgrade for all 2.0.x users.
