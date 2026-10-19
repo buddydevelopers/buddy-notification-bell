@@ -83,113 +83,65 @@ class BD_BNB_Settings {
 	 * Register all settings with sanitize callbacks.
 	 */
 	public static function register_settings() {
-		// General section.
-		add_settings_section(
+		register_setting(
 			'bnb_general',
-			__( 'General', 'buddy-notification-bell' ),
-			'__return_false',
-			'bnb_general'
-		);
-
-		register_setting( 'bnb_general', 'bnb_sound_enabled', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
-			'default'           => 'yes',
-		) );
-		register_setting( 'bnb_general', 'bnb_show_count', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
-			'default'           => 'yes',
-		) );
-		register_setting( 'bnb_general', 'bnb_bell_position', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_position' ),
-			'default'           => 'right',
-		) );
-		register_setting( 'bnb_general', 'bnb_notification_style', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_notification_style' ),
-			'default'           => 'individual',
-		) );
-
-		add_settings_field(
 			'bnb_sound_enabled',
-			__( 'Notification Sound', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_sound_enabled' ),
-			'bnb_general',
-			'bnb_general'
-		);
-		add_settings_field(
-			'bnb_show_count',
-			__( 'Count Badge', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_show_count' ),
-			'bnb_general',
-			'bnb_general'
-		);
-		add_settings_field(
-			'bnb_bell_position',
-			__( 'Bell Position in Menu', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_bell_position' ),
-			'bnb_general',
-			'bnb_general'
-		);
-		add_settings_field(
-			'bnb_notification_style',
-			__( 'Notification List Style', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_notification_style' ),
-			'bnb_general',
-			'bnb_general'
-		);
-
-		// BuddyBoss section — only when platform is active.
-		if ( self::is_buddyboss_active() ) {
-			add_settings_section(
-				'bnb_buddyboss',
-				__( 'BuddyBoss Integration', 'buddy-notification-bell' ),
-				'__return_false',
-				'bnb_buddyboss'
-			);
-
-			register_setting( 'bnb_buddyboss', 'bnb_buddyboss_mode', array(
+			array(
 				'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
-				'default'           => '',
-			) );
+				'default'           => 'yes',
+			)
+		);
+		register_setting(
+			'bnb_general',
+			'bnb_show_count',
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
+				'default'           => 'yes',
+			)
+		);
+		register_setting(
+			'bnb_general',
+			'bnb_bell_position',
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_position' ),
+				'default'           => 'right',
+			)
+		);
+		register_setting(
+			'bnb_general',
+			'bnb_notification_style',
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_notification_style' ),
+				'default'           => 'individual',
+			)
+		);
 
-			add_settings_field(
-				'bnb_buddyboss_mode',
-				__( 'Use BuddyBoss Notification Panel', 'buddy-notification-bell' ),
-				array( __CLASS__, 'field_buddyboss_mode' ),
+		if ( self::is_buddyboss_active() ) {
+			register_setting(
 				'bnb_buddyboss',
-				'bnb_buddyboss'
+				'bnb_buddyboss_mode',
+				array(
+					'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
+					'default'           => '',
+				)
 			);
 		}
 
-		// Display section.
-		add_settings_section(
+		register_setting(
 			'bnb_display',
-			__( 'Display', 'buddy-notification-bell' ),
-			'__return_false',
-			'bnb_display'
-		);
-
-		register_setting( 'bnb_display', 'make_default_visible', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
-			'default'           => '',
-		) );
-		register_setting( 'bnb_display', 'bnb_floating_bell', array(
-			'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
-			'default'           => '',
-		) );
-
-		add_settings_field(
 			'make_default_visible',
-			__( 'Disable Auto Bell in Menu', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_disable_auto_bell' ),
-			'bnb_display',
-			'bnb_display'
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
+				'default'           => '',
+			)
 		);
-		add_settings_field(
-			'bnb_floating_bell',
-			__( 'Show Floating Bell', 'buddy-notification-bell' ),
-			array( __CLASS__, 'field_floating_bell' ),
+		register_setting(
 			'bnb_display',
-			'bnb_display'
+			'bnb_floating_bell',
+			array(
+				'sanitize_callback' => array( __CLASS__, 'sanitize_yes_no' ),
+				'default'           => '',
+			)
 		);
 	}
 
@@ -204,19 +156,63 @@ class BD_BNB_Settings {
 		}
 
 		wp_enqueue_style(
+			'bnb-admin-fonts',
+			'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap',
+			array(),
+			null
+		);
+
+		add_filter(
+			'style_loader_tag',
+			static function ( $html, $handle ) {
+				if ( 'bnb-admin-fonts' !== $handle ) {
+					return $html;
+				}
+
+				$preconnect  = '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+				$preconnect .= '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+
+				return $preconnect . $html;
+			},
+			10,
+			2
+		);
+
+		wp_enqueue_style(
 			'bnb-admin-style',
 			BNB_URL . 'assets/css/bnb-admin.css',
-			array(),
-			BNB_VERSION
+			array( 'bnb-admin-fonts' ),
+			self::asset_version( 'assets/css/bnb-admin.css' )
 		);
 
 		wp_enqueue_script(
 			'bnb-admin',
 			BNB_URL . 'assets/js/bnb-admin.js',
 			array( 'jquery' ),
-			BNB_VERSION,
+			self::asset_version( 'assets/js/bnb-admin.js' ),
 			true
 		);
+
+		wp_localize_script(
+			'bnb-admin',
+			'bnbAdmin',
+			array(
+				'copied' => __( 'Copied', 'buddy-notification-bell' ),
+			)
+		);
+	}
+
+	/**
+	 * Cache-bust admin assets when the file changes, without a plugin version bump.
+	 *
+	 * @param string $relative Path relative to the plugin root.
+	 * @return string
+	 */
+	private static function asset_version( $relative ) {
+		$path  = BNB_PATH . $relative;
+		$mtime = file_exists( $path ) ? filemtime( $path ) : BNB_VERSION;
+
+		return BNB_VERSION . '.' . $mtime;
 	}
 
 	/**
@@ -235,230 +231,367 @@ class BD_BNB_Settings {
 		$active_tab = in_array( $active_tab, $valid_tabs, true ) ? $active_tab : 'general';
 		?>
 		<div class="wrap bnb-settings-wrap">
+			<div class="bnb-settings-shell">
 
-			<div class="bnb-settings-header">
-				<svg class="bnb-settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" aria-hidden="true">
-					<path fill="currentColor" d="M439.39 362.29c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71zM224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64z"/>
-				</svg>
-				<div class="bnb-settings-header-text">
-					<h1><?php esc_html_e( 'Buddy Notification Bell', 'buddy-notification-bell' ); ?></h1>
-					<p class="bnb-settings-version"><?php
-					/* translators: %s: plugin version number */
-					echo esc_html( sprintf( __( 'Version %s', 'buddy-notification-bell' ), BNB_VERSION ) ); ?></p>
+				<header class="bnb-settings-header">
+					<div class="bnb-header-stage" aria-hidden="true">
+						<span class="bnb-header-orb bnb-header-orb--a"></span>
+						<span class="bnb-header-orb bnb-header-orb--b"></span>
+						<span class="bnb-header-grid"></span>
+						<span class="bnb-header-ring bnb-header-ring--1"></span>
+						<span class="bnb-header-ring bnb-header-ring--2"></span>
+						<span class="bnb-header-ring bnb-header-ring--3"></span>
+					</div>
+
+					<div class="bnb-header-content">
+						<div class="bnb-header-brand">
+							<span class="bnb-settings-mark" aria-hidden="true">
+								<span class="bnb-settings-mark-pulse"></span>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+									<path fill="currentColor" d="M439.39 362.29c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71zM224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64z"/>
+								</svg>
+							</span>
+							<div class="bnb-settings-header-text">
+								<p class="bnb-kicker"><?php esc_html_e( 'Realtime community alerts', 'buddy-notification-bell' ); ?></p>
+								<h1><?php esc_html_e( 'Buddy Notification Bell', 'buddy-notification-bell' ); ?></h1>
+								<p class="bnb-lede"><?php esc_html_e( 'Shape how members hear, see, and open every new notification.', 'buddy-notification-bell' ); ?></p>
+								<div class="bnb-header-aside">
+									<span class="bnb-chip">
+										<?php
+										/* translators: %s: plugin version number */
+										echo esc_html( sprintf( __( 'v%s', 'buddy-notification-bell' ), BNB_VERSION ) );
+										?>
+									</span>
+									<span class="bnb-chip bnb-chip--live">
+										<span class="bnb-chip-dot" aria-hidden="true"></span>
+										<?php esc_html_e( 'Live sync', 'buddy-notification-bell' ); ?>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</header>
+
+				<nav class="nav-tab-wrapper bnb-nav-tabs" aria-label="<?php esc_attr_e( 'Settings sections', 'buddy-notification-bell' ); ?>">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=general' ) ); ?>"
+					   class="nav-tab <?php echo esc_attr( 'general' === $active_tab ? 'nav-tab-active' : '' ); ?>">
+						<?php esc_html_e( 'General', 'buddy-notification-bell' ); ?>
+					</a>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=display' ) ); ?>"
+					   class="nav-tab <?php echo esc_attr( 'display' === $active_tab ? 'nav-tab-active' : '' ); ?>">
+						<?php esc_html_e( 'Display', 'buddy-notification-bell' ); ?>
+					</a>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=shortcode' ) ); ?>"
+					   class="nav-tab <?php echo esc_attr( 'shortcode' === $active_tab ? 'nav-tab-active' : '' ); ?>">
+						<?php esc_html_e( 'Shortcode', 'buddy-notification-bell' ); ?>
+					</a>
+					<?php if ( self::is_buddyboss_active() ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=buddyboss' ) ); ?>"
+					   class="nav-tab <?php echo esc_attr( 'buddyboss' === $active_tab ? 'nav-tab-active' : '' ); ?>">
+						<?php esc_html_e( 'BuddyBoss', 'buddy-notification-bell' ); ?>
+					</a>
+					<?php endif; ?>
+				</nav>
+
+				<div class="bnb-settings-body<?php echo esc_attr( 'shortcode' === $active_tab ? ' bnb-settings-body--docs' : '' ); ?>">
+					<?php if ( 'shortcode' === $active_tab ) : ?>
+						<?php self::render_shortcode_tab(); ?>
+					<?php else : ?>
+						<form method="post" action="options.php" class="bnb-settings-form">
+							<?php
+							settings_fields( 'bnb_' . $active_tab );
+							if ( 'display' === $active_tab ) {
+								self::render_display_fields();
+							} elseif ( 'buddyboss' === $active_tab && self::is_buddyboss_active() ) {
+								self::render_buddyboss_fields();
+							} else {
+								self::render_general_fields();
+							}
+							?>
+							<div class="bnb-settings-footer">
+								<p class="bnb-footer-hint"><?php esc_html_e( 'Changes apply on the next page load for members.', 'buddy-notification-bell' ); ?></p>
+								<?php submit_button( __( 'Save Changes', 'buddy-notification-bell' ) ); ?>
+							</div>
+						</form>
+					<?php endif; ?>
+				</div>
+
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Renders the General tab fields.
+	 *
+	 * @return void
+	 */
+	private static function render_general_fields() {
+		$sound    = get_option( 'bnb_sound_enabled', 'yes' );
+		$count    = get_option( 'bnb_show_count', 'yes' );
+		$position = get_option( 'bnb_bell_position', 'right' );
+		$style    = get_option( 'bnb_notification_style', 'individual' );
+		?>
+		<div class="bnb-settings-list">
+			<?php
+			self::render_setting_open(
+				__( 'Notification Sound', 'buddy-notification-bell' ),
+				__( 'Play a sound alert when a new notification arrives.', 'buddy-notification-bell' ),
+				'',
+				'sound'
+			);
+			self::render_switch( 'bnb_sound_enabled', $sound, __( 'Notification Sound', 'buddy-notification-bell' ) );
+			self::render_setting_close();
+
+			self::render_setting_open(
+				__( 'Count Badge', 'buddy-notification-bell' ),
+				__( 'Show the unread notification count on the bell.', 'buddy-notification-bell' ),
+				'',
+				'badge'
+			);
+			self::render_switch( 'bnb_show_count', $count, __( 'Count Badge', 'buddy-notification-bell' ) );
+			self::render_setting_close();
+
+			self::render_setting_open(
+				__( 'Bell Position in Menu', 'buddy-notification-bell' ),
+				__( 'Where the bell sits inside the primary navigation menu.', 'buddy-notification-bell' ),
+				'',
+				'position'
+			);
+			?>
+			<div class="bnb-segment" role="radiogroup" aria-label="<?php esc_attr_e( 'Bell Position in Menu', 'buddy-notification-bell' ); ?>">
+				<label class="bnb-segment-option">
+					<input type="radio" name="bnb_bell_position" value="left" <?php checked( 'left', $position ); ?>>
+					<span class="bnb-segment-label">
+						<span class="bnb-segment-title"><?php esc_html_e( 'Left', 'buddy-notification-bell' ); ?></span>
+						<span class="bnb-segment-meta"><?php esc_html_e( 'Before items', 'buddy-notification-bell' ); ?></span>
+					</span>
+				</label>
+				<label class="bnb-segment-option">
+					<input type="radio" name="bnb_bell_position" value="right" <?php checked( 'right', $position ); ?>>
+					<span class="bnb-segment-label">
+						<span class="bnb-segment-title"><?php esc_html_e( 'Right', 'buddy-notification-bell' ); ?></span>
+						<span class="bnb-segment-meta"><?php esc_html_e( 'After items', 'buddy-notification-bell' ); ?></span>
+					</span>
+				</label>
+			</div>
+			<?php
+			self::render_setting_close();
+
+			self::render_setting_open(
+				__( 'Notification List Style', 'buddy-notification-bell' ),
+				__( 'Choose how notifications appear in the dropdown.', 'buddy-notification-bell' ),
+				'stack',
+				'style'
+			);
+			?>
+			<div class="bnb-choices" role="radiogroup" aria-label="<?php esc_attr_e( 'Notification List Style', 'buddy-notification-bell' ); ?>">
+				<label class="bnb-choice">
+					<input type="radio" name="bnb_notification_style" value="individual" <?php checked( 'individual', $style ); ?>>
+					<span class="bnb-choice-preview bnb-choice-preview--individual" aria-hidden="true">
+						<span></span><span></span><span></span>
+					</span>
+					<span class="bnb-choice-body">
+						<span class="bnb-choice-title"><?php esc_html_e( 'Individual', 'buddy-notification-bell' ); ?></span>
+						<span class="bnb-choice-text"><?php esc_html_e( 'Show each notification on its own row, the way BuddyPress lists them.', 'buddy-notification-bell' ); ?></span>
+					</span>
+					<span class="bnb-choice-mark" aria-hidden="true"></span>
+				</label>
+				<label class="bnb-choice">
+					<input type="radio" name="bnb_notification_style" value="grouped" <?php checked( 'grouped', $style ); ?>>
+					<span class="bnb-choice-preview bnb-choice-preview--grouped" aria-hidden="true">
+						<span class="bnb-choice-badge">3</span>
+						<span></span>
+					</span>
+					<span class="bnb-choice-body">
+						<span class="bnb-choice-title"><?php esc_html_e( 'Grouped', 'buddy-notification-bell' ); ?></span>
+						<span class="bnb-choice-text"><?php esc_html_e( 'Combine similar notifications into one summary, such as "3 friendship requests".', 'buddy-notification-bell' ); ?></span>
+					</span>
+					<span class="bnb-choice-mark" aria-hidden="true"></span>
+				</label>
+			</div>
+			<?php self::render_setting_close(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Renders the Display tab fields.
+	 *
+	 * @return void
+	 */
+	private static function render_display_fields() {
+		$disable_menu = get_option( 'make_default_visible', '' );
+		$floating     = get_option( 'bnb_floating_bell', '' );
+		?>
+		<div class="bnb-settings-list">
+			<?php
+			self::render_setting_open(
+				__( 'Disable Menu Bell', 'buddy-notification-bell' ),
+				__( 'Stop adding the bell to the primary menu. Place it yourself with the shortcode.', 'buddy-notification-bell' ),
+				'',
+				'menu'
+			);
+			self::render_switch( 'make_default_visible', $disable_menu, __( 'Disable Menu Bell', 'buddy-notification-bell' ) );
+			self::render_setting_close();
+
+			self::render_setting_open(
+				__( 'Floating Bell', 'buddy-notification-bell' ),
+				__( 'Pin a bell button to the bottom-right corner. Useful on block themes that do not use a classic menu.', 'buddy-notification-bell' ),
+				'',
+				'float'
+			);
+			self::render_switch( 'bnb_floating_bell', $floating, __( 'Floating Bell', 'buddy-notification-bell' ) );
+			self::render_setting_close();
+			?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Renders the BuddyBoss tab fields.
+	 *
+	 * @return void
+	 */
+	private static function render_buddyboss_fields() {
+		$mode = get_option( 'bnb_buddyboss_mode', '' );
+		?>
+		<div class="bnb-settings-list">
+			<?php
+			self::render_setting_open(
+				__( 'BuddyBoss Notification Panel', 'buddy-notification-bell' ),
+				__( 'Open the BuddyBoss notification panel when the bell is clicked, instead of the built-in dropdown.', 'buddy-notification-bell' ),
+				'',
+				'boss'
+			);
+			self::render_switch( 'bnb_buddyboss_mode', $mode, __( 'BuddyBoss Notification Panel', 'buddy-notification-bell' ) );
+			self::render_setting_close();
+			?>
+		</div>
+		<div class="bnb-note">
+			<p><?php esc_html_e( 'BuddyBoss notifications are not real-time. The bell still detects new notifications and plays the sound, then hands the window to BuddyBoss.', 'buddy-notification-bell' ); ?></p>
+			<p>
+				<?php esc_html_e( 'To target a custom BuddyBoss template, override the panel selector with this filter:', 'buddy-notification-bell' ); ?>
+				<code>bd_bnb_buddyboss_notification_selector</code>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Opens a setting row. Call render_setting_close() after the control.
+	 *
+	 * @param string $title       Setting title.
+	 * @param string $description Help text under the title.
+	 * @param string $modifier    Optional layout modifier, such as "stack".
+	 * @param string $icon        Optional icon key for the tile mark.
+	 * @return void
+	 */
+	private static function render_setting_open( $title, $description, $modifier = '', $icon = '' ) {
+		$class = 'bnb-setting';
+		if ( '' !== $modifier ) {
+			$class .= ' bnb-setting--' . sanitize_html_class( $modifier );
+		}
+		if ( '' !== $icon ) {
+			$class .= ' bnb-setting--icon-' . sanitize_html_class( $icon );
+		}
+		?>
+		<section class="<?php echo esc_attr( $class ); ?>">
+			<div class="bnb-setting-copy">
+				<span class="bnb-setting-icon" aria-hidden="true"></span>
+				<div class="bnb-setting-copy-text">
+					<h2><?php echo esc_html( $title ); ?></h2>
+					<?php if ( '' !== $description ) : ?>
+						<p><?php echo esc_html( $description ); ?></p>
+					<?php endif; ?>
 				</div>
 			</div>
+			<div class="bnb-setting-control">
+		<?php
+	}
 
-			<nav class="nav-tab-wrapper bnb-nav-tabs">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=general' ) ); ?>"
-				   class="nav-tab <?php echo esc_attr( 'general' === $active_tab ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'General', 'buddy-notification-bell' ); ?>
-				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=display' ) ); ?>"
-				   class="nav-tab <?php echo esc_attr( 'display' === $active_tab ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'Display', 'buddy-notification-bell' ); ?>
-				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=shortcode' ) ); ?>"
-				   class="nav-tab <?php echo esc_attr( 'shortcode' === $active_tab ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'Shortcode', 'buddy-notification-bell' ); ?>
-				</a>
-				<?php if ( self::is_buddyboss_active() ) : ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=buddy-notification-bell&tab=buddyboss' ) ); ?>"
-				   class="nav-tab <?php echo esc_attr( 'buddyboss' === $active_tab ? 'nav-tab-active' : '' ); ?>">
-					<?php esc_html_e( 'BuddyBoss', 'buddy-notification-bell' ); ?>
-				</a>
-				<?php endif; ?>
-			</nav>
-
-			<div class="bnb-settings-body">
-				<?php if ( 'shortcode' === $active_tab ) : ?>
-					<?php self::render_shortcode_tab(); ?>
-				<?php elseif ( 'buddyboss' === $active_tab && self::is_buddyboss_active() ) : ?>
-					<form method="post" action="options.php">
-						<?php
-						settings_fields( 'bnb_buddyboss' );
-						do_settings_sections( 'bnb_buddyboss' );
-						submit_button( __( 'Save Changes', 'buddy-notification-bell' ) );
-						?>
-					</form>
-				<?php else : ?>
-					<form method="post" action="options.php">
-						<?php
-						settings_fields( 'bnb_' . $active_tab );
-						do_settings_sections( 'bnb_' . $active_tab );
-						submit_button( __( 'Save Changes', 'buddy-notification-bell' ) );
-						?>
-					</form>
-				<?php endif; ?>
+	/**
+	 * Closes a setting row opened by render_setting_open().
+	 *
+	 * @return void
+	 */
+	private static function render_setting_close() {
+		?>
 			</div>
+		</section>
+		<?php
+	}
 
-		</div>
+	/**
+	 * Renders an on/off switch. Checked value is "yes".
+	 *
+	 * @param string $name  Input name.
+	 * @param string $value Stored option value.
+	 * @param string $label Accessible name for the switch.
+	 * @return void
+	 */
+	private static function render_switch( $name, $value, $label ) {
+		?>
+		<label class="bnb-switch">
+			<input
+				type="checkbox"
+				class="bnb-switch-input"
+				name="<?php echo esc_attr( $name ); ?>"
+				value="yes"
+				aria-label="<?php echo esc_attr( $label ); ?>"
+				<?php checked( 'yes', $value ); ?>
+			>
+			<span class="bnb-switch-ui" aria-hidden="true"></span>
+		</label>
 		<?php
 	}
 
 	/**
 	 * Render the Shortcode info tab (no form, just info).
+	 *
+	 * @return void
 	 */
 	private static function render_shortcode_tab() {
+		$shortcode   = '[buddy_notification_bell]';
+		$php_usage   = "<?php echo do_shortcode( '[buddy_notification_bell]' ); ?>";
+		$icon_filter = "add_filter( 'buddy_bell_icon', function( \$icon ) {\n\treturn '<i class=\"fas fa-bell\"></i>';\n} );";
 		?>
 		<div class="bnb-shortcode-info">
-			<div class="bnb-info-card">
-				<h3><?php esc_html_e( 'Place the Bell Anywhere', 'buddy-notification-bell' ); ?></h3>
-				<p><?php esc_html_e( 'Use the shortcode below to place the notification bell anywhere on your site — pages, widgets, or theme templates.', 'buddy-notification-bell' ); ?></p>
+			<article class="bnb-info-card">
+				<div class="bnb-info-card-head">
+					<h2><?php esc_html_e( 'Place the bell anywhere', 'buddy-notification-bell' ); ?></h2>
+				</div>
+				<p><?php esc_html_e( 'Use this shortcode in pages, widgets, or theme templates.', 'buddy-notification-bell' ); ?></p>
 				<div class="bnb-shortcode-box">
-					<code>[buddy_notification_bell]</code>
-					<button class="bnb-copy-btn button" data-clipboard="[buddy_notification_bell]">
+					<code><?php echo esc_html( $shortcode ); ?></code>
+					<button type="button" class="bnb-copy-btn" data-clipboard="<?php echo esc_attr( $shortcode ); ?>">
 						<?php esc_html_e( 'Copy', 'buddy-notification-bell' ); ?>
 					</button>
 				</div>
-			</div>
+			</article>
 
-			<div class="bnb-info-card">
-				<h3><?php esc_html_e( 'PHP Template Usage', 'buddy-notification-bell' ); ?></h3>
-				<p><?php esc_html_e( 'You can also call it directly from your theme templates:', 'buddy-notification-bell' ); ?></p>
-				<div class="bnb-shortcode-box">
-					<code>&lt;?php echo do_shortcode( \'[buddy_notification_bell]\' ); ?&gt;</code>
+			<article class="bnb-info-card">
+				<div class="bnb-info-card-head">
+					<h2><?php esc_html_e( 'PHP template', 'buddy-notification-bell' ); ?></h2>
+					<button type="button" class="bnb-copy-btn bnb-copy-btn--quiet" data-clipboard="<?php echo esc_attr( $php_usage ); ?>">
+						<?php esc_html_e( 'Copy', 'buddy-notification-bell' ); ?>
+					</button>
 				</div>
-			</div>
+				<p><?php esc_html_e( 'Print the bell from a theme template.', 'buddy-notification-bell' ); ?></p>
+				<pre class="bnb-code-block"><code><?php echo esc_html( $php_usage ); ?></code></pre>
+			</article>
 
-			<div class="bnb-info-card">
-				<h3><?php esc_html_e( 'Custom Bell Icon', 'buddy-notification-bell' ); ?></h3>
-				<p><?php esc_html_e( 'Override the default bell icon using this filter in your theme\'s functions.php:', 'buddy-notification-bell' ); ?></p>
-				<div class="bnb-shortcode-box">
-					<code>add_filter( 'buddy_bell_icon', function( $icon ) {<br>&nbsp;&nbsp;return '&lt;i class="fas fa-bell"&gt;&lt;/i&gt;';<br>} );</code>
+			<article class="bnb-info-card">
+				<div class="bnb-info-card-head">
+					<h2><?php esc_html_e( 'Custom bell icon', 'buddy-notification-bell' ); ?></h2>
+					<button type="button" class="bnb-copy-btn bnb-copy-btn--quiet" data-clipboard="<?php echo esc_attr( $icon_filter ); ?>">
+						<?php esc_html_e( 'Copy', 'buddy-notification-bell' ); ?>
+					</button>
 				</div>
-			</div>
+				<p><?php esc_html_e( 'Replace the default icon from your theme functions.php.', 'buddy-notification-bell' ); ?></p>
+				<pre class="bnb-code-block"><code><?php echo esc_html( $icon_filter ); ?></code></pre>
+			</article>
 		</div>
-		<?php
-	}
-
-	// -------------------------------------------------------------------------
-	// Field renderers
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Renders the notification sound checkbox field.
-	 *
-	 * @return void
-	 */
-	public static function field_sound_enabled() {
-		$value = get_option( 'bnb_sound_enabled', 'yes' );
-		?>
-		<label>
-			<input type="checkbox" name="bnb_sound_enabled" value="yes" <?php checked( 'yes', $value ); ?>>
-			<?php esc_html_e( 'Play a sound alert when a new notification arrives', 'buddy-notification-bell' ); ?>
-		</label>
-		<?php
-	}
-
-	/**
-	 * Renders the count badge checkbox field.
-	 *
-	 * @return void
-	 */
-	public static function field_show_count() {
-		$value = get_option( 'bnb_show_count', 'yes' );
-		?>
-		<label>
-			<input type="checkbox" name="bnb_show_count" value="yes" <?php checked( 'yes', $value ); ?>>
-			<?php esc_html_e( 'Show unread notification count badge on the bell', 'buddy-notification-bell' ); ?>
-		</label>
-		<?php
-	}
-
-	/**
-	 * Renders the bell position select field.
-	 *
-	 * @return void
-	 */
-	public static function field_bell_position() {
-		$value = get_option( 'bnb_bell_position', 'right' );
-		?>
-		<select name="bnb_bell_position">
-			<option value="right" <?php selected( 'right', $value ); ?>><?php esc_html_e( 'Right (after menu items)', 'buddy-notification-bell' ); ?></option>
-			<option value="left" <?php selected( 'left', $value ); ?>><?php esc_html_e( 'Left (before menu items)', 'buddy-notification-bell' ); ?></option>
-		</select>
-		<p class="description"><?php esc_html_e( 'Position of the bell within the primary navigation menu.', 'buddy-notification-bell' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Renders the disable auto-bell checkbox field.
-	 *
-	 * @return void
-	 */
-	public static function field_disable_auto_bell() {
-		$value = get_option( 'make_default_visible', '' );
-		?>
-		<label>
-			<input type="checkbox" name="make_default_visible" value="yes" <?php checked( 'yes', $value ); ?>>
-			<?php esc_html_e( 'Disable automatic bell injection into the primary menu', 'buddy-notification-bell' ); ?>
-		</label>
-		<p class="description"><?php esc_html_e( 'When checked, use the shortcode to place the bell manually.', 'buddy-notification-bell' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Renders the notification list style radio field.
-	 *
-	 * @return void
-	 */
-	public static function field_notification_style() {
-		$value = get_option( 'bnb_notification_style', 'individual' );
-		?>
-		<fieldset>
-			<label style="display:block; margin-bottom:6px;">
-				<input type="radio" name="bnb_notification_style" value="individual" <?php checked( 'individual', $value ); ?>>
-				<?php esc_html_e( 'Individual — show each notification separately (like BuddyPress)', 'buddy-notification-bell' ); ?>
-			</label>
-			<label style="display:block;">
-				<input type="radio" name="bnb_notification_style" value="grouped" <?php checked( 'grouped', $value ); ?>>
-				<?php esc_html_e( 'Grouped — combine similar notifications (e.g. "3 friendship requests")', 'buddy-notification-bell' ); ?>
-			</label>
-		</fieldset>
-		<p class="description"><?php esc_html_e( 'Individual shows a separate item for every notification. Grouped collapses the same type into one summary item.', 'buddy-notification-bell' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Renders the floating bell checkbox field.
-	 *
-	 * @return void
-	 */
-	public static function field_floating_bell() {
-		$value = get_option( 'bnb_floating_bell', '' );
-		?>
-		<label>
-			<input type="checkbox" name="bnb_floating_bell" value="yes" <?php checked( 'yes', $value ); ?>>
-			<?php esc_html_e( 'Show a fixed floating bell button (bottom-right corner)', 'buddy-notification-bell' ); ?>
-		</label>
-		<p class="description"><?php esc_html_e( 'Useful for block/FSE themes that do not use a traditional navigation menu.', 'buddy-notification-bell' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Renders the BuddyBoss mode checkbox field.
-	 *
-	 * @return void
-	 */
-	public static function field_buddyboss_mode() {
-		$value = get_option( 'bnb_buddyboss_mode', '' );
-		?>
-		<label>
-			<input type="checkbox" name="bnb_buddyboss_mode" value="yes" <?php checked( 'yes', $value ); ?>>
-			<?php esc_html_e( 'When clicking the bell, open BuddyBoss\'s notification panel instead of the built-in dropdown', 'buddy-notification-bell' ); ?>
-		</label>
-		<p class="description">
-			<?php esc_html_e( 'BuddyBoss notifications are not real-time. With this enabled, Buddy Notification Bell continues to detect new notifications in the background and plays the sound alert — but hands off the notification window to BuddyBoss.', 'buddy-notification-bell' ); ?>
-		</p>
-		<p class="description">
-			<?php
-			printf(
-				/* translators: %s: filter name */
-				esc_html__( 'Advanced: use the %s filter to override the BuddyBoss panel selector if you have customised the BuddyBoss template.', 'buddy-notification-bell' ),
-				'<code>bd_bnb_buddyboss_notification_selector</code>'
-			);
-			?>
-		</p>
 		<?php
 	}
 

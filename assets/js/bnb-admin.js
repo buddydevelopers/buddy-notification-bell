@@ -3,21 +3,26 @@
 	'use strict';
 
 	$( function () {
-		// Copy shortcode to clipboard.
-		$( document ).on( 'click', '.bnb-copy-btn', function () {
-			var $btn  = $( this );
-			var text  = $btn.data( 'clipboard' ) || $btn.closest( '.bnb-shortcode-box' ).find( 'code' ).text();
+		$( document ).on( 'click', '.bnb-copy-btn', function ( event ) {
+			event.preventDefault();
 
-			if ( ! navigator.clipboard ) {
+			var $btn = $( this );
+			var text = $btn.attr( 'data-clipboard' );
+
+			if ( ! text || ! navigator.clipboard ) {
 				return;
 			}
 
 			navigator.clipboard.writeText( text ).then( function () {
-				var original = $btn.text();
-				$btn.text( 'Copied!' );
-				setTimeout( function () {
-					$btn.text( original );
-				}, 2000 );
+				var original = $btn.data( 'label' ) || $btn.text();
+				var copied   = ( window.bnbAdmin && bnbAdmin.copied ) ? bnbAdmin.copied : 'Copied';
+
+				$btn.data( 'label', original );
+				$btn.addClass( 'is-copied' ).text( copied );
+
+				window.setTimeout( function () {
+					$btn.removeClass( 'is-copied' ).text( original );
+				}, 1600 );
 			} );
 		} );
 	} );
