@@ -47,7 +47,7 @@
 .toplevel_page_buddy-notification-bell .bnb-settings-wrap.wrap,
 .bnb-settings-wrap.wrap,
 .bnb-settings-wrap {
-	max-width:     760px;
+	max-width:     none;
 	width:         100%;
 	margin-top:    20px;
 	margin-right:  20px;
@@ -61,7 +61,7 @@
 .bnb-settings-shell {
 	position:      relative;
 	width:         100%;
-	max-width:     760px;
+	max-width:     none;
 	margin:        0;
 	overflow:      hidden;
 	border:        1px solid rgba(255, 255, 255, 0.55);

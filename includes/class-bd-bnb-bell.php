@@ -147,14 +147,21 @@ class BD_BNB_Bell {
 			return '';
 		}
 
-		// Allow themes/plugins to fully replace the output.
-		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
-		$override      = apply_filters( 'buddy_notification_output', '', $notifications );
+		// Prefer unread count helper — avoids formatting every notification just for the badge.
+		$count = function_exists( 'bp_notifications_get_unread_notification_count' )
+			? (int) bp_notifications_get_unread_notification_count( bp_loggedin_user_id() )
+			: 0;
+
+		// Allow themes/plugins to fully replace the output. Only load/format the
+		// notification list when a customizer is actually hooked.
+		$notifications = array();
+		if ( has_filter( 'buddy_notification_output' ) ) {
+			$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
+		}
+		$override = apply_filters( 'buddy_notification_output', '', $notifications );
 		if ( $override ) {
 			return $override;
 		}
-
-		$count          = is_array( $notifications ) ? count( $notifications ) : 0;
 		$show_count     = get_option( 'bnb_show_count', 'yes' );
 		$all_url        = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
 		$bell_icon      = apply_filters( 'buddy_bell_icon', self::get_default_icon() );
