@@ -301,10 +301,15 @@
 
 /* ── Menu item wrapper ───────────────────────────────────────────────────── */
 
-li.bnb-menu-item {
+li.bnb-menu-item,
+.wp-block-navigation-item.bnb-menu-item {
 	display: inline-flex !important;
 	align-items: center;
 	list-style: none;
+}
+
+.wp-block-navigation .bnb-menu-item .bnb-bell-wrapper {
+	display: inline-flex;
 }
 
 /* ── Floating bell ───────────────────────────────────────────────────────── */

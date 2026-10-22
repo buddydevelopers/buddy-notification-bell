@@ -428,7 +428,7 @@ class BD_BNB_Settings {
 			<?php
 			self::render_setting_open(
 				__( 'Disable Menu Bell', 'buddy-notification-bell' ),
-				__( 'Stop adding the bell to the primary menu. Place it yourself with the shortcode.', 'buddy-notification-bell' ),
+				__( 'Stop adding the bell automatically. On block and headless themes it is added to the header navigation. Use the shortcode to place it yourself.', 'buddy-notification-bell' ),
 				'',
 				'menu'
 			);
@@ -437,7 +437,7 @@ class BD_BNB_Settings {
 
 			self::render_setting_open(
 				__( 'Floating Bell', 'buddy-notification-bell' ),
-				__( 'Pin a bell button to the bottom-right corner. Useful on block themes that do not use a classic menu.', 'buddy-notification-bell' ),
+				__( 'Always pin a bell button to the bottom-right corner. Themes with no menu already get this automatically.', 'buddy-notification-bell' ),
 				'',
 				'float'
 			);
