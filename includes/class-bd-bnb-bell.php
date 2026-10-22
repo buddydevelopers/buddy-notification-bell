@@ -86,14 +86,14 @@ class BD_BNB_Bell {
 		$atts = shortcode_atts(
 			array(
 				'size'     => 'normal',
-				'position' => 'right',
+				'position' => self::get_position(),
 			),
 			$atts,
 			'buddy_notification_bell'
 		);
 
 		$size     = in_array( $atts['size'], array( 'small', 'normal', 'large' ), true ) ? $atts['size'] : 'normal';
-		$position = in_array( $atts['position'], array( 'left', 'right' ), true ) ? $atts['position'] : 'right';
+		$position = in_array( $atts['position'], array( 'left', 'right' ), true ) ? $atts['position'] : self::get_position();
 
 		return self::render( $size, $position );
 	}
@@ -114,10 +114,25 @@ class BD_BNB_Bell {
 		$location = apply_filters( 'buddy_theme_location', 'primary' );
 
 		if ( isset( $args->theme_location ) && $location === $args->theme_location && 'yes' !== $disable ) {
-			$items .= '<li class="bnb-menu-item">' . self::render() . '</li>';
+			$position = self::get_position();
+			$item     = '<li class="bnb-menu-item bnb-menu-item-' . esc_attr( $position ) . '">' . self::render( 'normal', $position ) . '</li>';
+
+			// Left sits before the other items; right sits after them.
+			$items = ( 'left' === $position ) ? $item . $items : $items . $item;
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Saved menu position: left (before items) or right (after items).
+	 *
+	 * @return string
+	 */
+	public static function get_position() {
+		$position = get_option( 'bnb_bell_position', 'right' );
+
+		return in_array( $position, array( 'left', 'right' ), true ) ? $position : 'right';
 	}
 
 	/**
