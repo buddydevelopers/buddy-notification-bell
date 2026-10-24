@@ -1,5 +1,5 @@
 === Buddy Notification Bell ===
-Contributors: 1naveengiri, buddydevelopers, codex007
+Contributors: 1naveengiri, buddydevelopers, codex007, piyushmultidots
 Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
 Requires at least: WordPress 5.5
