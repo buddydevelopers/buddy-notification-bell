@@ -291,7 +291,15 @@ class BD_BNB_Manager {
 		$bp          = buddypress();
 		$description = null;
 
+		// BuddyPress friends_format_notifications() only handles these two actions.
+		// Unknown friends actions (custom / legacy) skip the callback to avoid PHP warnings.
+		$skip_callback = (
+			'friends' === $notification->component_name &&
+			! in_array( $notification->component_action, array( 'friendship_accepted', 'friendship_request' ), true )
+		);
+
 		if (
+			! $skip_callback &&
 			isset( $bp->{ $notification->component_name }->notification_callback ) &&
 			is_callable( $bp->{ $notification->component_name }->notification_callback )
 		) {
@@ -308,6 +316,7 @@ class BD_BNB_Manager {
 				'web'
 			);
 		} elseif (
+			! $skip_callback &&
 			isset( $bp->{ $notification->component_name }->format_notification_function ) &&
 			function_exists( $bp->{ $notification->component_name }->format_notification_function )
 		) {

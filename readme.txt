@@ -1,10 +1,10 @@
 === Buddy Notification Bell ===
-Contributors: 1naveengiri, buddydevelopers, codex007
+Contributors: 1naveengiri, buddydevelopers, codex007, piyushmultidots
 Donate link: https://www.paypal.me/1naveengiri/500
 Tags: buddypress, buddyboss, notifications, notification bell, real-time notifications
 Requires at least: WordPress 5.5
 Tested up to: 7.0
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -79,6 +79,12 @@ https://www.youtube.com/watch?v=d0viMMI5LMU
 3. setting to enable disable notification bell in primary menu.
 
 == Changelog ==
+
+= 2.0.3 =
+* Improved the Admin setting UI and UX
+* Fix the admin UI isues
+* Fixed the notification bell position issue
+* Fixed the Bell display issue on mobile when block theme activated
 
 = 2.0.2 =
 * Fixed: dependency notice now correctly recognises BuddyBoss Platform as a valid community platform (previously only checked for BuddyPress)

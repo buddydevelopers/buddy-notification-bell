@@ -3,7 +3,7 @@
  * Plugin Name:     Buddy Notification Bell
  * Plugin URI:      https://buddydevelopers.com
  * Description:     Converts BuddyPress notifications into a Facebook-style real-time notification bell with sound alerts.
- * Version:         2.0.2
+ * Version:         2.0.3
  * Requires at least: 5.5
  * Tested up to:    7.0
  * Requires PHP:    7.4
@@ -21,7 +21,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'BNB_VERSION', '2.0.2' );
+define( 'BNB_VERSION', '2.0.3' );
 define( 'BNB_FILE', __FILE__ );
 define( 'BNB_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BNB_URL', plugin_dir_url( __FILE__ ) );

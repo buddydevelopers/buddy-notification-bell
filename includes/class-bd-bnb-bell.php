@@ -11,14 +11,19 @@ if ( ! defined( 'WPINC' ) ) {
 
 class BD_BNB_Bell {
 
+	/**
+	 * Whether a bell was already placed in a menu, navigation block, or shortcode.
+	 *
+	 * @var bool
+	 */
+	private static $placed = false;
+
 	public static function init() {
 		add_shortcode( 'buddy_notification_bell', array( __CLASS__, 'shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'maybe_render_floating' ) );
-
-		if ( ! self::is_block_theme() ) {
-			add_filter( 'wp_nav_menu_items', array( __CLASS__, 'inject_into_menu' ), 10, 2 );
-		}
+		add_filter( 'wp_nav_menu_items', array( __CLASS__, 'inject_into_menu' ), 10, 2 );
+		add_filter( 'render_block_core/navigation', array( __CLASS__, 'inject_into_navigation_block' ), 10, 2 );
 	}
 
 	/**
@@ -86,38 +91,142 @@ class BD_BNB_Bell {
 		$atts = shortcode_atts(
 			array(
 				'size'     => 'normal',
-				'position' => 'right',
+				'position' => self::get_position(),
 			),
 			$atts,
 			'buddy_notification_bell'
 		);
 
 		$size     = in_array( $atts['size'], array( 'small', 'normal', 'large' ), true ) ? $atts['size'] : 'normal';
-		$position = in_array( $atts['position'], array( 'left', 'right' ), true ) ? $atts['position'] : 'right';
+		$position = in_array( $atts['position'], array( 'left', 'right' ), true ) ? $atts['position'] : self::get_position();
+
+		self::$placed = true;
 
 		return self::render( $size, $position );
 	}
 
 	/**
-	 * Injects the bell into the primary nav menu (classic themes only).
+	 * Injects the bell into a classic nav menu.
 	 *
 	 * @param string   $items
 	 * @param stdClass $args
 	 * @return string
 	 */
 	public static function inject_into_menu( $items, $args ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() || self::is_auto_menu_disabled() ) {
 			return $items;
 		}
-		
-		$disable  = get_option( 'make_default_visible', '' );
-		$location = apply_filters( 'buddy_theme_location', 'primary' );
 
-		if ( isset( $args->theme_location ) && $location === $args->theme_location && 'yes' !== $disable ) {
-			$items .= '<li class="bnb-menu-item">' . self::render() . '</li>';
+		$location = isset( $args->theme_location ) ? $args->theme_location : '';
+		if ( ! in_array( $location, self::menu_locations(), true ) ) {
+			return $items;
 		}
 
-		return $items;
+		$position     = self::get_position();
+		$item         = '<li class="bnb-menu-item bnb-menu-item-' . esc_attr( $position ) . '">' . self::render( 'normal', $position ) . '</li>';
+		self::$placed = true;
+
+		// Left sits before the other items; right sits after them.
+		return ( 'left' === $position ) ? $item . $items : $items . $item;
+	}
+
+	/**
+	 * Injects the bell into the first Site Editor / block navigation menu.
+	 *
+	 * Block and headless themes do not use Appearance → Menus, so
+	 * wp_nav_menu_items never runs for them.
+	 *
+	 * @param string $block_content Rendered navigation HTML.
+	 * @return string
+	 */
+	public static function inject_into_navigation_block( $block_content ) {
+		if ( ! is_user_logged_in() || self::is_auto_menu_disabled() || self::$placed || '' === $block_content ) {
+			return $block_content;
+		}
+
+		$position = self::get_position();
+		$item     = '<li class="wp-block-navigation-item bnb-menu-item bnb-menu-item-' . esc_attr( $position ) . '">' . self::render( 'normal', $position ) . '</li>';
+		$updated  = self::insert_navigation_item( $block_content, $item, $position );
+
+		if ( $updated !== $block_content ) {
+			self::$placed = true;
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * Locations that should receive the bell. Includes the legacy primary
+	 * location plus header menus used by BuddyBoss and header-builder themes.
+	 *
+	 * @return string[]
+	 */
+	private static function menu_locations() {
+		$filtered  = apply_filters( 'buddy_theme_location', 'primary' );
+		$locations = is_array( $filtered ) ? $filtered : array( $filtered );
+
+		$locations = array_merge(
+			$locations,
+			array( 'primary', 'header-menu', 'menu-1', 'main', 'header' )
+		);
+
+		return array_values( array_unique( array_filter( $locations ) ) );
+	}
+
+	/**
+	 * True when automatic menu injection is turned off in settings.
+	 *
+	 * @return bool
+	 */
+	private static function is_auto_menu_disabled() {
+		return 'yes' === get_option( 'make_default_visible', '' );
+	}
+
+	/**
+	 * Inserts the bell list item at the start or end of the navigation list.
+	 *
+	 * @param string $html     Navigation block HTML.
+	 * @param string $item     Bell markup wrapped in an li.
+	 * @param string $position left|right
+	 * @return string
+	 */
+	private static function insert_navigation_item( $html, $item, $position ) {
+		if ( ! preg_match( '/<ul\b[^>]*\bwp-block-navigation__container\b[^>]*>/i', $html, $match, PREG_OFFSET_CAPTURE ) ) {
+			return $html;
+		}
+
+		$open_at    = $match[0][1];
+		$after_open = $open_at + strlen( $match[0][0] );
+
+		if ( 'left' === $position ) {
+			return substr( $html, 0, $after_open ) . $item . substr( $html, $after_open );
+		}
+
+		$rest  = substr( $html, $after_open );
+		$depth = 1;
+
+		if ( preg_match_all( '/<\/?ul\b[^>]*>/i', $rest, $tags, PREG_OFFSET_CAPTURE ) ) {
+			foreach ( $tags[0] as $tag ) {
+				$depth += ( 0 === stripos( $tag[0], '</ul' ) ) ? -1 : 1;
+				if ( 0 === $depth ) {
+					$close_at = $after_open + $tag[1];
+					return substr( $html, 0, $close_at ) . $item . substr( $html, $close_at );
+				}
+			}
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Saved menu position: left (before items) or right (after items).
+	 *
+	 * @return string
+	 */
+	public static function get_position() {
+		$position = get_option( 'bnb_bell_position', 'right' );
+
+		return in_array( $position, array( 'left', 'right' ), true ) ? $position : 'right';
 	}
 
 	/**
@@ -128,11 +237,38 @@ class BD_BNB_Bell {
 			return;
 		}
 
-		if ( 'yes' !== get_option( 'bnb_floating_bell', '' ) ) {
+		$explicit = 'yes' === get_option( 'bnb_floating_bell', '' );
+		$fallback = ! self::$placed && self::should_fallback_bell();
+
+		if ( ! $explicit && ! $fallback ) {
 			return;
 		}
 
 		echo '<div class="bnb-floating-wrap">' . self::render() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Shows a floating bell when this theme has no Appearance menu to inject into.
+	 *
+	 * @return bool
+	 */
+	private static function should_fallback_bell() {
+		if ( self::is_auto_menu_disabled() ) {
+			return false;
+		}
+
+		if ( self::is_block_theme() ) {
+			return true;
+		}
+
+		$locations = get_nav_menu_locations();
+		foreach ( self::menu_locations() as $location ) {
+			if ( ! empty( $locations[ $location ] ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -147,14 +283,21 @@ class BD_BNB_Bell {
 			return '';
 		}
 
-		// Allow themes/plugins to fully replace the output.
-		$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
-		$override      = apply_filters( 'buddy_notification_output', '', $notifications );
+		// Prefer unread count helper — avoids formatting every notification just for the badge.
+		$count = function_exists( 'bp_notifications_get_unread_notification_count' )
+			? (int) bp_notifications_get_unread_notification_count( bp_loggedin_user_id() )
+			: 0;
+
+		// Allow themes/plugins to fully replace the output. Only load/format the
+		// notification list when a customizer is actually hooked.
+		$notifications = array();
+		if ( has_filter( 'buddy_notification_output' ) ) {
+			$notifications = bp_notifications_get_notifications_for_user( bp_loggedin_user_id(), 'object' );
+		}
+		$override = apply_filters( 'buddy_notification_output', '', $notifications );
 		if ( $override ) {
 			return $override;
 		}
-
-		$count          = is_array( $notifications ) ? count( $notifications ) : 0;
 		$show_count     = get_option( 'bnb_show_count', 'yes' );
 		$all_url        = trailingslashit( bp_loggedin_user_domain() . bp_get_notifications_slug() );
 		$bell_icon      = apply_filters( 'buddy_bell_icon', self::get_default_icon() );
