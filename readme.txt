@@ -83,6 +83,8 @@ https://www.youtube.com/watch?v=d0viMMI5LMU
 = 2.0.3 =
 * Improved the Admin setting UI and UX
 * Fix the admin UI isues
+* Fixed the notification bell position issue
+* Fixed the Bell display issue on mobile when block theme activated
 
 = 2.0.2 =
 * Fixed: dependency notice now correctly recognises BuddyBoss Platform as a valid community platform (previously only checked for BuddyPress)
